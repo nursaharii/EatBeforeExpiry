@@ -5,6 +5,7 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22130"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <customFonts key="customFonts">
@@ -16,69 +17,89 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="ItemCell" id="KGk-i7-Jjw" customClass="ItemCell" customModule="EatBeforeExpiry" customModuleProvider="target">
-            <rect key="frame" x="0.0" y="0.0" width="320" height="60"/>
+            <rect key="frame" x="0.0" y="0.0" width="330" height="100"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
-                <rect key="frame" x="0.0" y="0.0" width="320" height="60"/>
+                <rect key="frame" x="0.0" y="0.0" width="330" height="100"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="l9U-gR-nKH">
-                        <rect key="frame" x="25" y="11" width="226" height="16"/>
-                        <constraints>
-                            <constraint firstAttribute="height" constant="16" id="BNX-Bi-am3"/>
-                            <constraint firstAttribute="width" constant="226" id="SiK-Bq-cbL"/>
-                        </constraints>
-                        <fontDescription key="fontDescription" name="ArchivoCondensed-Medium" family="Archivo Condensed" pointSize="15"/>
-                        <nil key="textColor"/>
-                        <nil key="highlightedColor"/>
-                    </label>
-                    <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="31" translatesAutoresizingMaskIntoConstraints="NO" id="wlB-A9-XlP">
-                        <rect key="frame" x="15" y="35" width="251" height="16"/>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ZNa-Ri-Iso">
+                        <rect key="frame" x="10" y="10" width="310" height="88"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qeg-eh-TA5" customClass="PaddingLabel" customModule="EatBeforeExpiry" customModuleProvider="target">
-                                <rect key="frame" x="0.0" y="0.0" width="110" height="16"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="l9U-gR-nKH">
+                                <rect key="frame" x="30" y="13" width="226" height="16"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="16" id="LH6-fW-rXx"/>
-                                    <constraint firstAttribute="width" constant="110" id="M7j-ly-wiS"/>
+                                    <constraint firstAttribute="height" constant="16" id="BNX-Bi-am3"/>
+                                    <constraint firstAttribute="width" constant="226" id="SiK-Bq-cbL"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" name="ArchivoCondensed-Medium" family="Archivo Condensed" pointSize="12"/>
+                                <fontDescription key="fontDescription" name="ArchivoCondensed-Medium" family="Archivo Condensed" pointSize="15"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
-                                        <real key="value" value="8"/>
-                                    </userDefinedRuntimeAttribute>
-                                </userDefinedRuntimeAttributes>
                             </label>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2fR-2y-z3N" customClass="PaddingLabel" customModule="EatBeforeExpiry" customModuleProvider="target">
-                                <rect key="frame" x="141" y="0.0" width="110" height="16"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="110" id="Q7k-4q-ECe"/>
-                                    <constraint firstAttribute="height" constant="16" id="o0W-bZ-QwN"/>
-                                </constraints>
-                                <fontDescription key="fontDescription" name="ArchivoCondensed-Medium" family="Archivo Condensed" pointSize="12"/>
-                                <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                                <userDefinedRuntimeAttributes>
-                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
-                                        <real key="value" value="8"/>
-                                    </userDefinedRuntimeAttribute>
-                                </userDefinedRuntimeAttributes>
-                            </label>
+                            <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="31" translatesAutoresizingMaskIntoConstraints="NO" id="wlB-A9-XlP">
+                                <rect key="frame" x="20" y="54" width="251" height="24"/>
+                                <subviews>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qeg-eh-TA5" customClass="PaddingLabel" customModule="EatBeforeExpiry" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="0.0" width="110" height="24"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="24" id="LH6-fW-rXx"/>
+                                            <constraint firstAttribute="width" constant="110" id="M7j-ly-wiS"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" name="ArchivoCondensed-Medium" family="Archivo Condensed" pointSize="12"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                                <real key="value" value="8"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                    </label>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="2fR-2y-z3N" customClass="PaddingLabel" customModule="EatBeforeExpiry" customModuleProvider="target">
+                                        <rect key="frame" x="141" y="0.0" width="110" height="24"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="110" id="Q7k-4q-ECe"/>
+                                            <constraint firstAttribute="height" constant="24" id="o0W-bZ-QwN"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" name="ArchivoCondensed-Medium" family="Archivo Condensed" pointSize="12"/>
+                                        <nil key="textColor"/>
+                                        <nil key="highlightedColor"/>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                                <real key="value" value="8"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
+                                    </label>
+                                </subviews>
+                            </stackView>
                         </subviews>
-                    </stackView>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="wlB-A9-XlP" firstAttribute="leading" secondItem="ZNa-Ri-Iso" secondAttribute="leading" constant="20" id="AxN-ni-yvl"/>
+                            <constraint firstItem="l9U-gR-nKH" firstAttribute="leading" secondItem="ZNa-Ri-Iso" secondAttribute="leading" constant="30" id="Eze-Ac-UEd"/>
+                            <constraint firstItem="l9U-gR-nKH" firstAttribute="top" secondItem="ZNa-Ri-Iso" secondAttribute="top" constant="13" id="GXL-R9-Zc6"/>
+                            <constraint firstAttribute="bottom" secondItem="wlB-A9-XlP" secondAttribute="bottom" constant="10" id="OiU-gN-Wsk"/>
+                            <constraint firstItem="wlB-A9-XlP" firstAttribute="top" secondItem="l9U-gR-nKH" secondAttribute="bottom" constant="25" id="QJv-fz-fNW"/>
+                            <constraint firstAttribute="trailing" secondItem="wlB-A9-XlP" secondAttribute="trailing" constant="39" id="ufC-9P-I1v"/>
+                        </constraints>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                <real key="value" value="12"/>
+                            </userDefinedRuntimeAttribute>
+                        </userDefinedRuntimeAttributes>
+                    </view>
                 </subviews>
                 <color key="backgroundColor" red="0.93333333330000001" green="0.94901960780000005" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                 <constraints>
-                    <constraint firstItem="l9U-gR-nKH" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="11" id="CIC-4N-XDW"/>
-                    <constraint firstItem="wlB-A9-XlP" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="15" id="EiT-Sx-aUT"/>
-                    <constraint firstItem="l9U-gR-nKH" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="25" id="JQC-jQ-uZ2"/>
-                    <constraint firstAttribute="bottom" secondItem="wlB-A9-XlP" secondAttribute="bottom" constant="9" id="Nc1-Lh-NFc"/>
-                    <constraint firstItem="wlB-A9-XlP" firstAttribute="top" secondItem="l9U-gR-nKH" secondAttribute="bottom" constant="8" symbolic="YES" id="NdU-EF-2cP"/>
-                    <constraint firstAttribute="trailing" secondItem="wlB-A9-XlP" secondAttribute="trailing" constant="16" id="tWx-Kn-Cn4"/>
+                    <constraint firstAttribute="bottom" secondItem="ZNa-Ri-Iso" secondAttribute="bottom" constant="2" id="G93-Dd-pjx"/>
+                    <constraint firstItem="ZNa-Ri-Iso" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="10" id="NBb-OE-I1W"/>
+                    <constraint firstItem="ZNa-Ri-Iso" firstAttribute="centerX" secondItem="H2p-sc-9uM" secondAttribute="centerX" id="XRO-uk-BoF"/>
+                    <constraint firstAttribute="trailing" secondItem="ZNa-Ri-Iso" secondAttribute="trailing" constant="10" id="cJj-14-KuI"/>
+                    <constraint firstItem="ZNa-Ri-Iso" firstAttribute="centerY" secondItem="H2p-sc-9uM" secondAttribute="centerY" constant="4" id="j1U-dE-ME9"/>
+                    <constraint firstItem="ZNa-Ri-Iso" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="10" id="xqX-Sm-jCU"/>
                 </constraints>
             </tableViewCellContentView>
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
+            <color key="backgroundColor" red="0.98823529409999999" green="0.98823529409999999" blue="0.98823529409999999" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
             <connections>
                 <outlet property="category" destination="qeg-eh-TA5" id="HZ7-ZR-5EH"/>
                 <outlet property="expiryDate" destination="2fR-2y-z3N" id="WQr-Yx-GZk"/>
@@ -95,4 +116,9 @@
             <size key="intrinsicContentSize" width="24" height="13.333333333333334"/>
         </designable>
     </designables>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
 </document>

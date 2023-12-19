@@ -1,15 +1,17 @@
 {
   "images" : [
     {
-      "filename" : "Professional Icon Highlight Cover Your Story (9).png",
+      "filename" : "Start screens - dark.jpg",
       "idiom" : "universal",
       "scale" : "1x"
     },
     {
+      "filename" : "Start screens - dark (1).jpg",
       "idiom" : "universal",
       "scale" : "2x"
     },
     {
+      "filename" : "Start screens - dark (2).jpg",
       "idiom" : "universal",
       "scale" : "3x"
     }

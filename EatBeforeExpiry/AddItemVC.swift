@@ -70,10 +70,7 @@ class AddItemVC: UIViewController {
     }
     
     private lazy var elements:[UIAction] = [fresh,milk,dryFood,fastFood,drink,dessert,sauce,bread,other]
-    
     private lazy var menu = UIMenu(children: elements)
-    
-    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -81,6 +78,7 @@ class AddItemVC: UIViewController {
         categoryDropButton.menu = menu
         prepareUI()
         createDatePicker()
+        self.hideKeyboardWhenTappedAround() 
         
     }
     override func viewWillAppear(_ animated: Bool) {
@@ -151,8 +149,11 @@ class AddItemVC: UIViewController {
         newItem.productName = productName.text ?? ""
         
         if var items = UserDefaultsManager().getDataForObject(type: [Product].self, forKey: .addItem) {
-                items.append(newItem)
-                UserDefaultsManager().setDataForObject(value: items, key: .addItem)
+            if let maxId = items.max(by: {$0.id<$1.id})?.id {
+                newItem.id = maxId + 1
+            }
+            items.append(newItem)
+            UserDefaultsManager().setDataForObject(value: items, key: .addItem)
         } else {
             UserDefaultsManager().setDataForObject(value: [newItem], key: .addItem)
         }

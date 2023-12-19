@@ -8,6 +8,7 @@
 import Foundation
 
 struct Product: Codable {
+    var id = Int()
     var productName = String()
     var category = String()
     var expiryDate = Date()

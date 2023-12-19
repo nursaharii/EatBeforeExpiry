@@ -71,10 +71,13 @@ class ViewController: UIViewController {
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var textView: UITextView!
     @IBOutlet weak var showRecipeButton: UIButton!
+    @IBOutlet weak var searchTextfield: UITextField!
     
     var selectedItems = [String]()
     var items = [Product]()
     var filteredItems = [Product]()
+    var lowerData = String()
+    var searchedItems = [Product]()
     
     let openAI = OpenAI(apiToken: "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")
     
@@ -83,9 +86,8 @@ class ViewController: UIViewController {
         collectionView.register(UINib(nibName: "CategoryCell", bundle: Bundle.main),forCellWithReuseIdentifier: "CategoryCell")
         tableView.register(UINib(nibName: "ItemCell", bundle: nil), forCellReuseIdentifier: "ItemCell")
         showRecipeButton.addShadow()
-        
-        
-        
+        searchTextfield.setLeftPadding(25)
+        self.hideKeyboardWhenTappedAround()
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -146,28 +148,50 @@ class ViewController: UIViewController {
 
     @IBAction func reset(_ sender: Any) {
         filteredItems = items
+        searchedItems.removeAll()
+        searchTextfield.text = ""
+        tableView.reloadData()
+    }
+    
+    func search() {
+        searchedItems = filteredItems.filter({ item in
+            if let _ = item.productName.lowercased().range(of: lowerData,options: .caseInsensitive) {
+                return true
+            }
+            return false
+        })
         tableView.reloadData()
     }
 }
 
 extension ViewController: UITableViewDelegate,UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        filteredItems.count
+        if searchedItems.count > 0 {
+            searchedItems.count
+        } else {
+            filteredItems.count
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         if let cell = tableView.dequeueReusableCell(withIdentifier: ItemCell.identifier, for: indexPath) as? ItemCell {
+            var items = [Product]()
+            if searchedItems.count > 0 {
+                items = searchedItems
+            } else {
+                items = filteredItems
+            }
             cell.expiryDate.edgeInset = UIEdgeInsets(top: 5, left: 10, bottom: 5, right: 10)
             cell.category.edgeInset = UIEdgeInsets(top: 5, left: 10, bottom: 5, right: 10)
             cell.category.backgroundColor = .yellow
             cell.expiryDate.backgroundColor = .red
-            cell.productName.text = filteredItems[indexPath.row].productName
-            cell.category.text = filteredItems[indexPath.row].category
+            cell.productName.text = items[indexPath.row].productName
+            cell.category.text = items[indexPath.row].category
             let formatter = DateFormatter()
             formatter.dateStyle = .medium
             formatter.timeStyle = .none
-            cell.expiryDate.text = formatter.string(from: filteredItems[indexPath.row].expiryDate)
+            cell.expiryDate.text = formatter.string(from: items[indexPath.row].expiryDate)
             
             //            if selectedItems.contains(items[indexPath.row].productName) {
             //                cell.selectImage.image = UIImage(named: "select-filled")
@@ -177,12 +201,12 @@ extension ViewController: UITableViewDelegate,UITableViewDataSource {
             
             let today = Date()
             if let nextDate = Calendar.current.date(byAdding: .day, value: 5, to: today) {
-                if filteredItems[indexPath.row].expiryDate <= today {
+                if items[indexPath.row].expiryDate <= today {
                     cell.expiryDate.backgroundColor = .errorRed
                     cell.expiryDate.textColor = .white
                     //                    cell.selectItemButton.isEnabled = false
                     //                    cell.selectImage.image = UIImage(named:"select-disabled")
-                } else if filteredItems[indexPath.row].expiryDate <= nextDate {
+                } else if items[indexPath.row].expiryDate <= nextDate {
                     cell.expiryDate.backgroundColor = .yellow
                     cell.expiryDate.textColor = .black
                 } else {
@@ -191,7 +215,7 @@ extension ViewController: UITableViewDelegate,UITableViewDataSource {
                 }
             }
             
-            switch filteredItems[indexPath.row].category {
+            switch items[indexPath.row].category {
             case Categories.fresh.rawValue:
                 cell.category.backgroundColor = Categories.fresh.color
             case Categories.milk.rawValue:
@@ -227,6 +251,32 @@ extension ViewController: UITableViewDelegate,UITableViewDataSource {
         }
         
         return UITableViewCell()
+    }
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            if searchedItems.count > 0 {
+                var items = searchedItems
+                searchedItems.remove(at: indexPath.row)
+                
+                if let removeIndex = self.filteredItems.firstIndex(where: {$0.id == items[indexPath.row].id }) {
+                    filteredItems.remove(at: removeIndex)
+                }
+                if let removeIndex = self.items.firstIndex(where: {$0.id == items[indexPath.row].id }) {
+                    self.items.remove(at: removeIndex)
+                    UserDefaultsManager().setDataForObject(value: items, key: .addItem)
+                }
+                search()
+            } else {
+                filteredItems.remove(at: indexPath.row)
+                if let removeIndex = self.items.firstIndex(where: {$0.id == items[indexPath.row].id }) {
+                    self.items.remove(at: removeIndex)
+                    UserDefaultsManager().setDataForObject(value: items, key: .addItem)
+                }
+                tableView.reloadData()
+            }
+            
+        }
     }
 }
 
@@ -313,5 +363,30 @@ extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource, 
             tableView.reloadData()
         }
     }
+}
+
+extension ViewController : UITextFieldDelegate {
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        lowerData = (textField.text! + string).lowercased()
+        
+        if string == "" && range.length > 0 {
+            let deletedData = lowerData.dropLast(range.length)
+            lowerData = String(deletedData)
+        }
+        tableView.reloadData()
+        if lowerData.count >= 3 {
+            self.search()
+        }
+        return true
+    }
+    
+    func textFieldShouldClear(_ textField: UITextField) -> Bool {
+        print("text cleared")
+        //do few custom activities here
+        searchedItems.removeAll()
+        tableView.reloadData()
+        return true
+      }
 }
 
