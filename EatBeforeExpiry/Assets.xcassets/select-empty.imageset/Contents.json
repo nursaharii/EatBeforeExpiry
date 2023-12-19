@@ -1,0 +1,23 @@
+{
+  "images" : [
+    {
+      "filename" : "View=Circle, Type=Defaultselect-empty.png",
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "filename" : "View=Circle, Type=Defaultselect-empty (1).png",
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "filename" : "View=Circle, Type=Defaultselect-empty (2).png",
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

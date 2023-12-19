@@ -1,0 +1,6 @@
+framework module Pods_EatBeforeExpiry {
+  umbrella header "Pods-EatBeforeExpiry-umbrella.h"
+
+  export *
+  module * { export * }
+}
