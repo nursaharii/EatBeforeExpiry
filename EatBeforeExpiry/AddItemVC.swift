@@ -147,7 +147,9 @@ class AddItemVC: UIViewController {
     
     @IBAction func addItem(_ sender: Any) {
         newItem.productName = productName.text ?? ""
-        
+        if newItem.category.isEmpty {
+            self.newItem.category = Categories.other.rawValue
+        }
         if var items = UserDefaultsManager().getDataForObject(type: [Product].self, forKey: .addItem) {
             if let maxId = items.max(by: {$0.id<$1.id})?.id {
                 newItem.id = maxId + 1
