@@ -25,51 +25,87 @@ class AddItemVC: UIViewController {
     
     private lazy var fresh = UIAction(title: Categories.fresh.rawValue) { action in
         self.categoryDropButton.setTitle(Categories.fresh.rawValue, for: .normal)
+        self.categoryDropButton.setTitleColor(.white, for: .normal)
+        self.categoryDropButton.contentHorizontalAlignment = .center
+        self.categoryDropButton.titleLabel?.font = .systemFont(ofSize: 17.0, weight: .bold)
+        self.categoryDropButton.titleEdgeInsets = UIEdgeInsets(top: 0,left: 0,bottom: 0,right: 0)
         self.newItem.category = Categories.fresh.rawValue
         self.categoryDropButton.backgroundColor = Categories.fresh.color
     }
     private lazy var milk = UIAction(title: Categories.milk.rawValue) { action in
         self.categoryDropButton.setTitle(Categories.milk.rawValue, for: .normal)
+        self.categoryDropButton.setTitleColor(.white, for: .normal)
+        self.categoryDropButton.contentHorizontalAlignment = .center
+        self.categoryDropButton.titleLabel?.font = .systemFont(ofSize: 17.0, weight: .bold)
+        self.categoryDropButton.titleEdgeInsets = UIEdgeInsets(top: 0,left: 0,bottom: 0,right: 0)
         self.newItem.category = Categories.milk.rawValue
         self.categoryDropButton.backgroundColor = Categories.milk.color
     }
     private lazy var dryFood = UIAction(title: Categories.dryFood.rawValue) { action in
         self.categoryDropButton.setTitle(Categories.dryFood.rawValue, for: .normal)
+        self.categoryDropButton.setTitleColor(.white, for: .normal)
+        self.categoryDropButton.contentHorizontalAlignment = .center
+        self.categoryDropButton.titleLabel?.font = .systemFont(ofSize: 17.0, weight: .bold)
+        self.categoryDropButton.titleEdgeInsets = UIEdgeInsets(top: 0,left: 0,bottom: 0,right: 0)
         self.newItem.category = Categories.dryFood.rawValue
         self.categoryDropButton.backgroundColor = Categories.dryFood.color
     }
     private lazy var fastFood = UIAction(title: Categories.fastFood.rawValue) { action in
         self.categoryDropButton.setTitle(Categories.fastFood.rawValue, for: .normal)
+        self.categoryDropButton.setTitleColor(.white, for: .normal)
+        self.categoryDropButton.contentHorizontalAlignment = .center
+        self.categoryDropButton.titleLabel?.font = .systemFont(ofSize: 17.0, weight: .bold)
+        self.categoryDropButton.titleEdgeInsets = UIEdgeInsets(top: 0,left: 0,bottom: 0,right: 0)
         self.newItem.category = Categories.fastFood.rawValue
         self.categoryDropButton.backgroundColor = Categories.fastFood.color
     }
     private lazy var drink = UIAction(title: Categories.drink.rawValue) { action in
         self.categoryDropButton.setTitle(Categories.drink.rawValue, for: .normal)
+        self.categoryDropButton.setTitleColor(.white, for: .normal)
+        self.categoryDropButton.contentHorizontalAlignment = .center
+        self.categoryDropButton.titleLabel?.font = .systemFont(ofSize: 17.0, weight: .bold)
+        self.categoryDropButton.titleEdgeInsets = UIEdgeInsets(top: 0,left: 0,bottom: 0,right: 0)
         self.newItem.category = Categories.drink.rawValue
         self.categoryDropButton.backgroundColor = Categories.drink.color
     }
     private lazy var dessert = UIAction(title: Categories.dessert.rawValue) { action in
         self.categoryDropButton.setTitle(Categories.dessert.rawValue, for: .normal)
+        self.categoryDropButton.setTitleColor(.white, for: .normal)
+        self.categoryDropButton.contentHorizontalAlignment = .center
+        self.categoryDropButton.titleLabel?.font = .systemFont(ofSize: 17.0, weight: .bold)
+        self.categoryDropButton.titleEdgeInsets = UIEdgeInsets(top: 0,left: 0,bottom: 0,right: 0)
         self.newItem.category = Categories.dessert.rawValue
         self.categoryDropButton.backgroundColor = Categories.dessert.color
     }
     private lazy var sauce = UIAction(title: Categories.sauce.rawValue) { action in
         self.categoryDropButton.setTitle(Categories.sauce.rawValue, for: .normal)
+        self.categoryDropButton.setTitleColor(.black, for: .normal)
+        self.categoryDropButton.contentHorizontalAlignment = .center
+        self.categoryDropButton.titleLabel?.font = .systemFont(ofSize: 17.0, weight: .bold)
+        self.categoryDropButton.titleEdgeInsets = UIEdgeInsets(top: 0,left: 0,bottom: 0,right: 0)
         self.newItem.category = Categories.sauce.rawValue
         self.categoryDropButton.backgroundColor = Categories.sauce.color
     }
     private lazy var bread = UIAction(title: Categories.bread.rawValue) { action in
         self.categoryDropButton.setTitle(Categories.bread.rawValue, for: .normal)
+        self.categoryDropButton.setTitleColor(.white, for: .normal)
+        self.categoryDropButton.contentHorizontalAlignment = .center
+        self.categoryDropButton.titleLabel?.font = .systemFont(ofSize: 17.0, weight: .bold)
+        self.categoryDropButton.titleEdgeInsets = UIEdgeInsets(top: 0,left: 0,bottom: 0,right: 0)
         self.newItem.category = Categories.bread.rawValue
         self.categoryDropButton.backgroundColor = Categories.bread.color
     }
     private lazy var other = UIAction(title: Categories.other.rawValue) { action in
         self.categoryDropButton.setTitle(Categories.other.rawValue, for: .normal)
+        self.categoryDropButton.setTitleColor(.white, for: .normal)
+        self.categoryDropButton.contentHorizontalAlignment = .center
+        self.categoryDropButton.titleLabel?.font = .systemFont(ofSize: 17.0, weight: .bold)
+        self.categoryDropButton.titleEdgeInsets = UIEdgeInsets(top: 0,left: 0,bottom: 0,right: 0)
         self.newItem.category = Categories.other.rawValue
         self.categoryDropButton.backgroundColor = Categories.other.color
     }
     
-    private lazy var elements:[UIAction] = [fresh,milk,dryFood,fastFood,drink,dessert,sauce,bread,other]
+    private lazy var elements:[UIAction] = [fresh,milk,dryFood,fastFood,drink,dessert,sauce,bread,other].reversed()
     private lazy var menu = UIMenu(children: elements)
     
     override func viewDidLoad() {
@@ -85,6 +121,7 @@ class AddItemVC: UIViewController {
         super.viewWillAppear(animated)
         self.navigationController?.setNavigationBarHidden(false, animated: false)
     }
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.navigationController?.setNavigationBarHidden(true, animated: false)
@@ -112,6 +149,7 @@ class AddItemVC: UIViewController {
         saveButton.setTitleColor(.white, for: .normal)
         productName.setLeftPadding(25)
         expiryDate.setLeftPadding(25)
+        categoryDropButton.titleEdgeInsets = UIEdgeInsets(top: 0,left: 25,bottom: 0,right: 0)
     }
     
     func createDatePicker() {
@@ -121,7 +159,8 @@ class AddItemVC: UIViewController {
         toolbar.sizeToFit()
         
         let doneButton = UIBarButtonItem(barButtonSystemItem: UIBarButtonItem.SystemItem.done, target: nil, action: #selector(doneButtonClicked))
-        toolbar.setItems([doneButton], animated: true)
+        let spaceButton = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        toolbar.setItems([spaceButton, doneButton], animated: true)
         toolbar.backgroundColor = .white
         expiryDate.inputAccessoryView = toolbar
         expiryDate.inputView = datePicker

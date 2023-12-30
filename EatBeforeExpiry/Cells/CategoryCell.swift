@@ -10,6 +10,7 @@ import UIKit
 class CategoryCell: UICollectionViewCell {
     @IBOutlet weak var categoryImg: UIImageView!
     @IBOutlet weak var categoryName: UILabel!
+    @IBOutlet weak var outsideView: UIView!
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -20,5 +21,11 @@ class CategoryCell: UICollectionViewCell {
     
     static func nib() -> UINib {
         return UINib(nibName: "CategoryCell", bundle: nil)
+    }
+    
+    override var isSelected: Bool{
+        didSet {
+            outsideView.borderColor = isSelected ? .greenImageSelect : .greyBorder
+        }
     }
 }
