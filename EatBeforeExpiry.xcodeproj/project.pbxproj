@@ -21,6 +21,7 @@
 		4C8775912B2B43C400027A59 /* EatBeforeExpiry.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 4C87758F2B2B43C400027A59 /* EatBeforeExpiry.xcdatamodeld */; };
 		4C8775932B2B43C500027A59 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4C8775922B2B43C500027A59 /* Assets.xcassets */; };
 		4C8775962B2B43C500027A59 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4C8775942B2B43C500027A59 /* LaunchScreen.storyboard */; };
+		4C87EAA32B40C1330099A007 /* RecipeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C87EAA22B40C1330099A007 /* RecipeViewController.swift */; };
 		4C95866A2B305FAB0088A619 /* Archivo_Condensed-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4C9586662B305FAB0088A619 /* Archivo_Condensed-Italic.ttf */; };
 		4C95866B2B305FAB0088A619 /* Archivo_Condensed-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4C9586672B305FAB0088A619 /* Archivo_Condensed-SemiBold.ttf */; };
 		4C95866C2B305FAB0088A619 /* Archivo_Condensed-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4C9586682B305FAB0088A619 /* Archivo_Condensed-Regular.ttf */; };
@@ -55,6 +56,7 @@
 		4C8775922B2B43C500027A59 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4C8775952B2B43C500027A59 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		4C8775972B2B43C500027A59 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		4C87EAA22B40C1330099A007 /* RecipeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeViewController.swift; sourceTree = "<group>"; };
 		4C9586662B305FAB0088A619 /* Archivo_Condensed-Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Archivo_Condensed-Italic.ttf"; sourceTree = "<group>"; };
 		4C9586672B305FAB0088A619 /* Archivo_Condensed-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Archivo_Condensed-SemiBold.ttf"; sourceTree = "<group>"; };
 		4C9586682B305FAB0088A619 /* Archivo_Condensed-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Archivo_Condensed-Regular.ttf"; sourceTree = "<group>"; };
@@ -135,6 +137,7 @@
 				4C8775882B2B43C400027A59 /* SceneDelegate.swift */,
 				4C87758A2B2B43C400027A59 /* ViewController.swift */,
 				4C3420582B2CA2F2005B9497 /* AddItemVC.swift */,
+				4C87EAA22B40C1330099A007 /* RecipeViewController.swift */,
 				4C87758C2B2B43C400027A59 /* Main.storyboard */,
 				4C8775942B2B43C500027A59 /* LaunchScreen.storyboard */,
 				4CC712612B2B8E80005D33FB /* APIFetchHandler.swift */,
@@ -327,6 +330,7 @@
 				4C3420522B2C8265005B9497 /* UIView+Ext.swift in Sources */,
 				4C8775892B2B43C400027A59 /* SceneDelegate.swift in Sources */,
 				4C3420592B2CA2F2005B9497 /* AddItemVC.swift in Sources */,
+				4C87EAA32B40C1330099A007 /* RecipeViewController.swift in Sources */,
 				4C95867E2B30755E0088A619 /* UIColor+Ext.swift in Sources */,
 				4C10CA8A2B2E1C9900B399AB /* CategoryCell.swift in Sources */,
 				4C9586802B3087710088A619 /* Product.swift in Sources */,

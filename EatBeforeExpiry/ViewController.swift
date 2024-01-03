@@ -95,6 +95,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         collectionView.register(UINib(nibName: "CategoryCell", bundle: Bundle.main),forCellWithReuseIdentifier: "CategoryCell")
         tableView.register(UINib(nibName: "ItemCell", bundle: nil), forCellReuseIdentifier: "ItemCell")
+        showRecipeButton.makeRounded()
         showRecipeButton.addShadow()
         searchTextfield.setLeftPadding(25)
         self.hideKeyboardWhenTappedAround()
@@ -105,6 +106,7 @@ class ViewController: UIViewController {
         self.navigationController?.setNavigationBarHidden(false, animated: false)
         selectedItems.removeAll()
         items.removeAll()
+        
         if let items = UserDefaultsManager().getDataForObject(type: [Product].self, forKey: .addItem) {
             self.items = items.sorted(by: { $0.expiryDate < $1.expiryDate})
             orderByButton.setImage(UIImage(named: "arrow-up"), for: .normal)
@@ -163,8 +165,12 @@ class ViewController: UIViewController {
     }
     
     @IBAction func showRecipe(_ sender: Any) {
-        showRecipeButton.isHidden = true
-        //askAI()
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let viewController = storyboard.instantiateViewController(withIdentifier: "RecipeVC") as! RecipeViewController
+        viewController.modalPresentationStyle = .overFullScreen
+        viewController.modalTransitionStyle = .coverVertical
+        
+        self.present(viewController, animated: true)
     }
     
     @IBAction func reset(_ sender: Any) {
@@ -415,6 +421,26 @@ extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource, 
             filteredItems.removeAll()
             emptyLabel.textColor = .grayCategory
             switch indexPath.row {
+            case 0:
+                if !descSorted {
+                    filteredItems = items.sorted(by: { $0.expiryDate < $1.expiryDate})
+                    orderByButton.setImage(UIImage(named: "arrow-up"), for: .normal)
+                } else {
+                    filteredItems = items.sorted(by: { $0.expiryDate > $1.expiryDate})
+                    orderByButton.setImage(UIImage(named: "arrow-down"), for: .normal)
+                }
+                searchedItems.removeAll()
+                searchTextfield.text = ""
+                if filteredItems.count > 0 {
+                    tableView.isHidden = false
+                    emptyLabel.isHidden = true
+                } else {
+                    tableView.isHidden = true
+                    emptyLabel.isHidden = false
+                    emptyLabel.textColor = .grayCategory
+                    emptyLabel.text = "Listenizde ürün bulunmamakta..."
+                    
+                }
             case 1:
                 filteredItems = items.filter({return $0.category == Categories.fresh.rawValue})
                 if filteredItems.isEmpty {
@@ -528,18 +554,15 @@ extension ViewController : UITextFieldDelegate {
             lowerData = String(deletedData)
         }
         tableView.reloadData()
-        if lowerData.count >= 3 {
+        if lowerData.count >= 2 {
             self.search()
         }
         return true
     }
     
     func textFieldShouldClear(_ textField: UITextField) -> Bool {
-        print("text cleared")
-        //do few custom activities here
         searchedItems.removeAll()
         tableView.reloadData()
         return true
     }
 }
-

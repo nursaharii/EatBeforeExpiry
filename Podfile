@@ -6,5 +6,6 @@ target 'EatBeforeExpiry' do
   use_frameworks!
   pod 'DropDown' 
   # Pods for EatBeforeExpiry
+pod 'ProgressHUD'
 
 end
