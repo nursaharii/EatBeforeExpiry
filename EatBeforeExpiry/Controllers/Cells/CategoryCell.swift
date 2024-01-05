@@ -23,7 +23,7 @@ class CategoryCell: UICollectionViewCell {
         return UINib(nibName: "CategoryCell", bundle: nil)
     }
     
-    override var isSelected: Bool{
+    override var isSelected: Bool {
         didSet {
             outsideView.borderColor = isSelected ? .greenImageSelect : .greyBorder
         }

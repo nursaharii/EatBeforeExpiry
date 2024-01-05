@@ -36,7 +36,9 @@
 		4C9586802B3087710088A619 /* Product.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C95867F2B3087710088A619 /* Product.swift */; };
 		4C9586822B3092E60088A619 /* UserDefaultsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9586812B3092E60088A619 /* UserDefaultsManager.swift */; };
 		4C9D27D62B31A93900836249 /* UIViewController+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9D27D52B31A93900836249 /* UIViewController+Ext.swift */; };
+		4CA8D7882B4748E800FD13E9 /* NotificationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA8D7872B4748E800FD13E9 /* NotificationViewController.swift */; };
 		4CC712622B2B8E80005D33FB /* APIFetchHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC712612B2B8E80005D33FB /* APIFetchHandler.swift */; };
+		4CC753D02B48010C0021340C /* CustomSegmentedControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CC753CF2B48010C0021340C /* CustomSegmentedControl.swift */; };
 		4CD4C42B2B3104D300302CB4 /* UITextField+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD4C42A2B3104D300302CB4 /* UITextField+Ext.swift */; };
 /* End PBXBuildFile section */
 
@@ -71,7 +73,9 @@
 		4C95867F2B3087710088A619 /* Product.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Product.swift; sourceTree = "<group>"; };
 		4C9586812B3092E60088A619 /* UserDefaultsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsManager.swift; sourceTree = "<group>"; };
 		4C9D27D52B31A93900836249 /* UIViewController+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Ext.swift"; sourceTree = "<group>"; };
+		4CA8D7872B4748E800FD13E9 /* NotificationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationViewController.swift; sourceTree = "<group>"; };
 		4CC712612B2B8E80005D33FB /* APIFetchHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIFetchHandler.swift; sourceTree = "<group>"; };
+		4CC753CF2B48010C0021340C /* CustomSegmentedControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSegmentedControl.swift; sourceTree = "<group>"; };
 		4CD4C42A2B3104D300302CB4 /* UITextField+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UITextField+Ext.swift"; sourceTree = "<group>"; };
 		C4470B8CF3090F97153AE09B /* Pods-EatBeforeExpiry.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EatBeforeExpiry.debug.xcconfig"; path = "Target Support Files/Pods-EatBeforeExpiry/Pods-EatBeforeExpiry.debug.xcconfig"; sourceTree = "<group>"; };
 		E838D5505AA82257FFDE77B4 /* Pods_EatBeforeExpiry.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_EatBeforeExpiry.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -110,6 +114,48 @@
 			path = Cells;
 			sourceTree = "<group>";
 		};
+		4C1D8D722B47449400745BB4 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				4C10CA872B2E1C7500B399AB /* Cells */,
+				4C87758A2B2B43C400027A59 /* ViewController.swift */,
+				4C87EAA22B40C1330099A007 /* RecipeViewController.swift */,
+				4C3420582B2CA2F2005B9497 /* AddItemVC.swift */,
+				4CA8D7872B4748E800FD13E9 /* NotificationViewController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		4C1D8D732B4744B300745BB4 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				4C9586812B3092E60088A619 /* UserDefaultsManager.swift */,
+				4CC712612B2B8E80005D33FB /* APIFetchHandler.swift */,
+				4CC753CF2B48010C0021340C /* CustomSegmentedControl.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		4C1D8D742B4744CE00745BB4 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				4C95867F2B3087710088A619 /* Product.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		4C1D8D752B4744DF00745BB4 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				4CD4C42A2B3104D300302CB4 /* UITextField+Ext.swift */,
+				4C95867D2B30755E0088A619 /* UIColor+Ext.swift */,
+				4C3420532B2C8C6E005B9497 /* UILabel+Ext.swift */,
+				4C3420512B2C8264005B9497 /* UIView+Ext.swift */,
+				4C9D27D52B31A93900836249 /* UIViewController+Ext.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		4C87757A2B2B43C400027A59 = {
 			isa = PBXGroup;
 			children = (
@@ -132,25 +178,17 @@
 			isa = PBXGroup;
 			children = (
 				4C87758F2B2B43C400027A59 /* EatBeforeExpiry.xcdatamodeld */,
-				4C10CA872B2E1C7500B399AB /* Cells */,
 				4C8775862B2B43C400027A59 /* AppDelegate.swift */,
 				4C8775882B2B43C400027A59 /* SceneDelegate.swift */,
-				4C87758A2B2B43C400027A59 /* ViewController.swift */,
-				4C3420582B2CA2F2005B9497 /* AddItemVC.swift */,
-				4C87EAA22B40C1330099A007 /* RecipeViewController.swift */,
+				4C1D8D722B47449400745BB4 /* Controllers */,
 				4C87758C2B2B43C400027A59 /* Main.storyboard */,
 				4C8775942B2B43C500027A59 /* LaunchScreen.storyboard */,
-				4CC712612B2B8E80005D33FB /* APIFetchHandler.swift */,
-				4C3420512B2C8264005B9497 /* UIView+Ext.swift */,
-				4C9D27D52B31A93900836249 /* UIViewController+Ext.swift */,
-				4C3420532B2C8C6E005B9497 /* UILabel+Ext.swift */,
-				4C95867D2B30755E0088A619 /* UIColor+Ext.swift */,
-				4C95867F2B3087710088A619 /* Product.swift */,
+				4C1D8D732B4744B300745BB4 /* Services */,
+				4C1D8D742B4744CE00745BB4 /* Models */,
+				4C1D8D752B4744DF00745BB4 /* Extensions */,
 				4C8775972B2B43C500027A59 /* Info.plist */,
 				4C8775922B2B43C500027A59 /* Assets.xcassets */,
 				4C95866E2B305FCB0088A619 /* Fonts */,
-				4C9586812B3092E60088A619 /* UserDefaultsManager.swift */,
-				4CD4C42A2B3104D300302CB4 /* UITextField+Ext.swift */,
 			);
 			path = EatBeforeExpiry;
 			sourceTree = "<group>";
@@ -323,6 +361,7 @@
 				4C9D27D62B31A93900836249 /* UIViewController+Ext.swift in Sources */,
 				4C9586822B3092E60088A619 /* UserDefaultsManager.swift in Sources */,
 				4CD4C42B2B3104D300302CB4 /* UITextField+Ext.swift in Sources */,
+				4CC753D02B48010C0021340C /* CustomSegmentedControl.swift in Sources */,
 				4C3420542B2C8C6E005B9497 /* UILabel+Ext.swift in Sources */,
 				4C95867B2B30736F0088A619 /* ItemCell.swift in Sources */,
 				4CC712622B2B8E80005D33FB /* APIFetchHandler.swift in Sources */,
@@ -330,6 +369,7 @@
 				4C3420522B2C8265005B9497 /* UIView+Ext.swift in Sources */,
 				4C8775892B2B43C400027A59 /* SceneDelegate.swift in Sources */,
 				4C3420592B2CA2F2005B9497 /* AddItemVC.swift in Sources */,
+				4CA8D7882B4748E800FD13E9 /* NotificationViewController.swift in Sources */,
 				4C87EAA32B40C1330099A007 /* RecipeViewController.swift in Sources */,
 				4C95867E2B30755E0088A619 /* UIColor+Ext.swift in Sources */,
 				4C10CA8A2B2E1C9900B399AB /* CategoryCell.swift in Sources */,
@@ -493,7 +533,7 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = EatBeforeExpiry/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "FOOD EXPIRY TRACKER AI";
+				INFOPLIST_KEY_CFBundleDisplayName = "Bozulmadan Ye";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -532,7 +572,7 @@
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = EatBeforeExpiry/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "FOOD EXPIRY TRACKER AI";
+				INFOPLIST_KEY_CFBundleDisplayName = "Bozulmadan Ye";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;

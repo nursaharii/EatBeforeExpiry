@@ -7,6 +7,7 @@
 
 import UIKit
 import OpenAI
+import ProgressHUD
 
 enum Categories: String {
     case all = "Tümü"
@@ -74,13 +75,14 @@ class ViewController: UIViewController {
     
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var collectionView: UICollectionView!
-    @IBOutlet weak var textView: UITextView!
     @IBOutlet weak var showRecipeButton: UIButton!
     @IBOutlet weak var searchTextfield: UITextField!
     @IBOutlet weak var emptyLabel: UILabel!
     @IBOutlet weak var orderByButton: UIButton!
     @IBOutlet weak var refreshButton: UIButton!
     @IBOutlet weak var refreshImage: UIImageView!
+    @IBOutlet weak var notifButton: UIButton!
+    
     
     var selectedItems = [String]()
     var items = [Product]()
@@ -88,6 +90,8 @@ class ViewController: UIViewController {
     var lowerData = String()
     var searchedItems = [Product]()
     var descSorted: Bool = false
+    var aboutToExpireItems = [Product]()
+    var expiryItems = [Product]()
     
     let openAI = OpenAI(apiToken: "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")
     
@@ -110,7 +114,19 @@ class ViewController: UIViewController {
         if let items = UserDefaultsManager().getDataForObject(type: [Product].self, forKey: .addItem) {
             self.items = items.sorted(by: { $0.expiryDate < $1.expiryDate})
             orderByButton.setImage(UIImage(named: "arrow-up"), for: .normal)
+            
+            for item in items {
+                if let nextDate = Calendar.current.date(byAdding: .day, value: 5, to: Date()) {
+                    if item.expiryDate <= nextDate, item.expiryDate > Date() {
+                        aboutToExpireItems.append(item)
+                    } else if item.expiryDate <= Date() {
+                        expiryItems.append(item)
+                    }
+                }
+            }
+            notifButton.setTitle("(\(aboutToExpireItems.count))", for: .normal)
         }
+        
         filteredItems = items
         if filteredItems.count > 0 {
             tableView.isHidden = false
@@ -119,7 +135,6 @@ class ViewController: UIViewController {
             tableView.isHidden = true
             emptyLabel.isHidden = false
             emptyLabel.textColor = .grayCategory
-            
         }
         tableView.reloadData()
     }
@@ -127,22 +142,6 @@ class ViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-    }
-    
-    func askAI() {
-        let query = ChatQuery(model: .gpt3_5Turbo, messages: [.init(role: .user, content: "Domates, biber, yufka bisküvi ile yemek tarifi")])
-        
-        openAI.chats(query: query) { result in
-            switch result {
-            case .success(let success):
-                DispatchQueue.main.async {
-                    self.textView.text = success.choices.first?.message.content
-                    self.textView.isHidden = false
-                }
-            case .failure(let failure):
-                print(failure.localizedDescription)
-            }
-        }
     }
     
     @IBAction func goToAddItemVC(_ sender: Any) {
@@ -158,6 +157,16 @@ class ViewController: UIViewController {
                 if let items = UserDefaultsManager().getDataForObject(type: [Product].self, forKey: .addItem) {
                     self.items = items.sorted(by: { $0.expiryDate < $1.expiryDate})
                     self.filteredItems = self.items
+                    for item in items {
+                        if let nextDate = Calendar.current.date(byAdding: .day, value: 5, to: Date()) {
+                            if item.expiryDate <= nextDate, item.expiryDate > Date() {
+                                self.aboutToExpireItems.append(item)
+                            } else if item.expiryDate <= Date() {
+                                self.expiryItems.append(item)
+                            }
+                        }
+                    }
+                    self.notifButton.setTitle("(\(self.aboutToExpireItems.count))", for: .normal)
                 }
                 self.resetAll()
             }
@@ -165,12 +174,18 @@ class ViewController: UIViewController {
     }
     
     @IBAction func showRecipe(_ sender: Any) {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let viewController = storyboard.instantiateViewController(withIdentifier: "RecipeVC") as! RecipeViewController
-        viewController.modalPresentationStyle = .overFullScreen
-        viewController.modalTransitionStyle = .coverVertical
-        
-        self.present(viewController, animated: true)
+        if items.isEmpty {
+            ProgressHUD.banner("Listeniz Boş", "Yemek önerisi alabilmek için lütfen listenize ürün ekleyiniz.", delay: 3.0)
+        } else {
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            let viewController = storyboard.instantiateViewController(withIdentifier: "RecipeVC") as! RecipeViewController
+            viewController.modalPresentationStyle = .overFullScreen
+            viewController.modalTransitionStyle = .coverVertical
+            viewController.items = items
+            viewController.recipeTitle = "GÜNÜN ÖNERİSİ"
+            viewController.category = "all"
+            self.present(viewController, animated: true)
+        }
     }
     
     @IBAction func reset(_ sender: Any) {
@@ -200,6 +215,16 @@ class ViewController: UIViewController {
         tableView.reloadData()
     }
     
+    @IBAction func goToNotificationVC(_ sender: Any) {
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let viewController = storyboard.instantiateViewController(withIdentifier: "NotificationVC") as! NotificationViewController
+        viewController.modalPresentationStyle = .overFullScreen
+        viewController.modalTransitionStyle = .crossDissolve
+        viewController.aboutToExpireItems = aboutToExpireItems
+        viewController.expiryItems = expiryItems
+        self.present(viewController, animated: true)
+    }
+    
     func resetAll() {
         if !descSorted {
             filteredItems = items.sorted(by: { $0.expiryDate < $1.expiryDate})
@@ -227,16 +252,11 @@ class ViewController: UIViewController {
     func search() {
         emptyLabel.textColor = .grayCategory
         searchedItems = filteredItems.filter({ item in
-            if let _ = item.productName.lowercased().range(of: lowerData,options: .caseInsensitive) {
+            if let _ = item.productName.prefix(lowerData.count).lowercased().range(of: lowerData,options: .caseInsensitive) {
                 emptyLabel.isHidden = true
                 tableView.isHidden = false
-                tableView.reloadData()
                 return true
-                
             }
-            emptyLabel.isHidden = false
-            tableView.isHidden = true
-            emptyLabel.text = "\(lowerData) listenizde bulunamadı."
             return false
         })
     }
@@ -244,32 +264,32 @@ class ViewController: UIViewController {
 
 extension ViewController: UITableViewDelegate,UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if searchedItems.count > 0 {
-            searchedItems.count
+        if !searchedItems.isEmpty {
+            return searchedItems.count
         } else {
-            filteredItems.count
+            return filteredItems.count
         }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         if let cell = tableView.dequeueReusableCell(withIdentifier: ItemCell.identifier, for: indexPath) as? ItemCell {
-            var items = [Product]()
-            if searchedItems.count > 0 {
-                items = searchedItems
+            var item = [Product]()
+            if !searchedItems.isEmpty {
+                item = searchedItems
             } else {
-                items = filteredItems
+                item = filteredItems
             }
             cell.expiryDate.edgeInset = UIEdgeInsets(top: 5, left: 10, bottom: 5, right: 10)
             cell.category.edgeInset = UIEdgeInsets(top: 5, left: 10, bottom: 5, right: 10)
             cell.category.backgroundColor = .yellow
             cell.expiryDate.backgroundColor = .red
-            cell.productName.text = items[indexPath.row].productName
-            cell.category.text = items[indexPath.row].category
+            cell.productName.text = item[indexPath.row].productName
+            cell.category.text = item[indexPath.row].category
             let formatter = DateFormatter()
             formatter.dateStyle = .medium
             formatter.timeStyle = .none
-            cell.expiryDate.text = formatter.string(from: items[indexPath.row].expiryDate)
+            cell.expiryDate.text = formatter.string(from: item[indexPath.row].expiryDate)
             
             //            if selectedItems.contains(items[indexPath.row].productName) {
             //                cell.selectImage.image = UIImage(named: "select-filled")
@@ -279,12 +299,12 @@ extension ViewController: UITableViewDelegate,UITableViewDataSource {
             
             let today = Date()
             if let nextDate = Calendar.current.date(byAdding: .day, value: 5, to: today) {
-                if items[indexPath.row].expiryDate <= today {
+                if item[indexPath.row].expiryDate <= today {
                     cell.expiryDate.backgroundColor = .errorRed
                     cell.expiryDate.textColor = .white
                     //                    cell.selectItemButton.isEnabled = false
                     //                    cell.selectImage.image = UIImage(named:"select-disabled")
-                } else if items[indexPath.row].expiryDate <= nextDate {
+                } else if item[indexPath.row].expiryDate <= nextDate, item[indexPath.row].expiryDate > Date() {
                     cell.expiryDate.backgroundColor = .yellow
                     cell.expiryDate.textColor = .black
                 } else {
@@ -293,7 +313,7 @@ extension ViewController: UITableViewDelegate,UITableViewDataSource {
                 }
             }
             
-            switch items[indexPath.row].category {
+            switch item[indexPath.row].category {
             case Categories.fresh.rawValue:
                 cell.category.backgroundColor = Categories.fresh.color
             case Categories.milk.rawValue:
@@ -334,20 +354,20 @@ extension ViewController: UITableViewDelegate,UITableViewDataSource {
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             if searchedItems.count > 0 {
-                let items = searchedItems
+                let item = searchedItems
                 searchedItems.remove(at: indexPath.row)
                 
-                if let removeIndex = self.filteredItems.firstIndex(where: {$0.id == items[indexPath.row].id }) {
+                if let removeIndex = self.filteredItems.firstIndex(where: {$0.id == item[indexPath.row].id }) {
                     filteredItems.remove(at: removeIndex)
                 }
-                if let removeIndex = self.items.firstIndex(where: {$0.id == items[indexPath.row].id }) {
+                if let removeIndex = self.items.firstIndex(where: {$0.id == item[indexPath.row].id }) {
                     self.items.remove(at: removeIndex)
                     UserDefaultsManager().setDataForObject(value: items, key: .addItem)
                 }
                 search()
             } else {
                 filteredItems.remove(at: indexPath.row)
-                if let removeIndex = self.items.firstIndex(where: {$0.id == items[indexPath.row].id }) {
+                if let removeIndex = self.items.firstIndex(where: {$0.id == filteredItems[indexPath.row].id }) {
                     self.items.remove(at: removeIndex)
                     UserDefaultsManager().setDataForObject(value: items, key: .addItem)
                 }
@@ -370,6 +390,7 @@ extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource, 
             case 0:
                 cell.categoryImg.image = UIImage(named: Categories.all.image)
                 cell.categoryName.text = Categories.all.rawValue
+                cell.isSelected = true
             case 1:
                 cell.categoryImg.image = UIImage(named: Categories.fresh.image)
                 cell.categoryName.text = Categories.fresh.rawValue
@@ -553,15 +574,30 @@ extension ViewController : UITextFieldDelegate {
             let deletedData = lowerData.dropLast(range.length)
             lowerData = String(deletedData)
         }
-        tableView.reloadData()
-        if lowerData.count >= 2 {
+        if lowerData.count >= 1 {
             self.search()
+            if searchedItems.isEmpty {
+                emptyLabel.isHidden = false
+                tableView.isHidden = true
+                emptyLabel.text = "\(lowerData) listenizde bulunamadı."
+            } else {
+                emptyLabel.isHidden = true
+                tableView.isHidden = false
+                tableView.reloadData()
+            }
+        } else {
+            searchedItems.removeAll()
+            emptyLabel.isHidden = true
+            tableView.isHidden = false
+            tableView.reloadData()
         }
         return true
     }
     
     func textFieldShouldClear(_ textField: UITextField) -> Bool {
         searchedItems.removeAll()
+        emptyLabel.isHidden = true
+        tableView.isHidden = false
         tableView.reloadData()
         return true
     }

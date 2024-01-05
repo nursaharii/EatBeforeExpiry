@@ -9,6 +9,7 @@ import Foundation
 enum UserDefaultKeys: String, CaseIterable{
     case addItem
     case recipe
+    case expireSuggestion
 }
 
 class UserDefaultsManager {
