@@ -52,7 +52,7 @@ class CustomSegmentedControl: UIControl {
             let button = UIButton(type: .system)
             button.setTitle(buttonTitle, for: .normal)
             button.setTitleColor(textColor, for: .normal)
-            button.titleLabel?.font = UIFont(name: "Archivo_Condensed-SemiBold", size: 15) ?? UIFont.systemFont(ofSize: 15, weight: .medium)
+            button.titleLabel?.font = UIFont(name: "Archivo_Condensed-SemiBold", size: 12) ?? UIFont.systemFont(ofSize: 12, weight: .medium)
             button.addTarget(self, action: #selector(buttonTapped(button:)), for: .touchUpInside)
             buttons.append(button)
         }

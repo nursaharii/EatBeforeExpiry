@@ -109,8 +109,19 @@ class ViewController: UIViewController {
         super.viewWillAppear(animated)
         self.navigationController?.setNavigationBarHidden(false, animated: false)
         selectedItems.removeAll()
-        items.removeAll()
+        getItems()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         
+    }
+    
+    func getItems() {
+        items.removeAll()
+        expiryItems.removeAll()
+        aboutToExpireItems.removeAll()
+        filteredItems.removeAll()
         if let items = UserDefaultsManager().getDataForObject(type: [Product].self, forKey: .addItem) {
             self.items = items.sorted(by: { $0.expiryDate < $1.expiryDate})
             orderByButton.setImage(UIImage(named: "arrow-up"), for: .normal)
@@ -125,8 +136,9 @@ class ViewController: UIViewController {
                 }
             }
             notifButton.setTitle("(\(aboutToExpireItems.count))", for: .normal)
+        } else {
+            notifButton.setTitle("(\(aboutToExpireItems.count))", for: .normal)
         }
-        
         filteredItems = items
         if filteredItems.count > 0 {
             tableView.isHidden = false
@@ -137,11 +149,6 @@ class ViewController: UIViewController {
             emptyLabel.textColor = .grayCategory
         }
         tableView.reloadData()
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
     }
     
     @IBAction func goToAddItemVC(_ sender: Any) {
@@ -355,8 +362,6 @@ extension ViewController: UITableViewDelegate,UITableViewDataSource {
         if editingStyle == .delete {
             if searchedItems.count > 0 {
                 let item = searchedItems
-                searchedItems.remove(at: indexPath.row)
-                
                 if let removeIndex = self.filteredItems.firstIndex(where: {$0.id == item[indexPath.row].id }) {
                     filteredItems.remove(at: removeIndex)
                 }
@@ -364,16 +369,26 @@ extension ViewController: UITableViewDelegate,UITableViewDataSource {
                     self.items.remove(at: removeIndex)
                     UserDefaultsManager().setDataForObject(value: items, key: .addItem)
                 }
+                searchedItems.remove(at: indexPath.row)
                 search()
             } else {
-                filteredItems.remove(at: indexPath.row)
                 if let removeIndex = self.items.firstIndex(where: {$0.id == filteredItems[indexPath.row].id }) {
                     self.items.remove(at: removeIndex)
                     UserDefaultsManager().setDataForObject(value: items, key: .addItem)
                 }
-                tableView.reloadData()
+                filteredItems.remove(at: indexPath.row)
+                if filteredItems.isEmpty {
+                    tableView.isHidden = true
+                    emptyLabel.isHidden = false
+                    emptyLabel.textColor = .grayCategory
+                    emptyLabel.text = "Listenizde ürün bulunmamakta..."
+                } else {
+                    tableView.isHidden = false
+                    emptyLabel.isHidden = true
+                    
+                }
             }
-            
+            getItems()
         }
     }
 }

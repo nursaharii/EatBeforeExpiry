@@ -7,6 +7,7 @@
 
 import UIKit
 import DropDown
+import ProgressHUD
 
 
 class AddItemVC: UIViewController {
@@ -21,7 +22,7 @@ class AddItemVC: UIViewController {
     
     typealias AddItemListener = () -> Void
     var addItemListener: AddItemListener?
-
+    var isExpiryDate: Bool = false
     
     private lazy var fresh = UIAction(title: Categories.fresh.rawValue) { action in
         self.categoryDropButton.setTitle(Categories.fresh.rawValue, for: .normal)
@@ -110,6 +111,8 @@ class AddItemVC: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        ProgressHUD.colorHUD = .grayCategory
+        ProgressHUD.colorStatus = .purpleCategory
         categoryDropButton.showsMenuAsPrimaryAction = true
         categoryDropButton.menu = menu
         prepareUI()
@@ -178,28 +181,29 @@ class AddItemVC: UIViewController {
         //Text field'a date picker'dan gelen değeri yazdırıyoruz.
         expiryDate.text = formatter.string(from: datePicker.date)
         newItem.expiryDate = datePicker.date
-        
-        //Done butonuna bastıktan sonra klavyemizin kapanacağını söylüyruz.
+        isExpiryDate = true
         self.view.endEditing(true)
     }
     
     
     @IBAction func addItem(_ sender: Any) {
+        
         newItem.productName = productName.text ?? ""
-        if newItem.category.isEmpty {
-            self.newItem.category = Categories.other.rawValue
-        }
-        if var items = UserDefaultsManager().getDataForObject(type: [Product].self, forKey: .addItem) {
-            if let maxId = items.max(by: {$0.id<$1.id})?.id {
-                newItem.id = maxId + 1
-            }
-            items.append(newItem)
-            UserDefaultsManager().setDataForObject(value: items, key: .addItem)
+        if newItem.category.isEmpty || newItem.productName == "" || !isExpiryDate {
+            ProgressHUD.failed("Lütfen ürün bilgilerini eksiksiz girdiğinizden emin olunuz.", interaction: true, delay: 2)
         } else {
-            UserDefaultsManager().setDataForObject(value: [newItem], key: .addItem)
-        }
-        self.dismiss(animated: true) {
-            self.addItemListener?()
+            if var items = UserDefaultsManager().getDataForObject(type: [Product].self, forKey: .addItem) {
+                if let maxId = items.max(by: {$0.id<$1.id})?.id {
+                    newItem.id = maxId + 1
+                }
+                items.append(newItem)
+                UserDefaultsManager().setDataForObject(value: items, key: .addItem)
+            } else {
+                UserDefaultsManager().setDataForObject(value: [newItem], key: .addItem)
+            }
+            self.dismiss(animated: true) {
+                self.addItemListener?()
+            }
         }
     }
     
@@ -208,5 +212,7 @@ class AddItemVC: UIViewController {
     }
 }
 
-
+extension Notification.Name {
+    static let myCustomValueUpdated = Notification.Name("myCustomValueUpdated")
+}
 
