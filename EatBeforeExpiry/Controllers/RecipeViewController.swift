@@ -14,7 +14,7 @@ class RecipeViewController: UIViewController {
     @IBOutlet weak var scrollView: UIScrollView!
     @IBOutlet weak var visualEffectView: UIVisualEffectView!
     @IBOutlet weak var titleLabel: UILabel!
-    @IBOutlet weak var recipeLabel: UILabel!
+    @IBOutlet weak var recipeLabel: UITextView!
     
     var items = [Product]()
     var recipeTitle = ""
@@ -89,9 +89,9 @@ class RecipeViewController: UIViewController {
         self.openAI.chats(query: query) { result in
             switch result {
             case .success(let success):
-                self.titleLabel.isHidden = false
                 ProgressHUD.remove()
                 DispatchQueue.main.async {
+                    self.titleLabel.isHidden = false
                     self.recipeLabel.text = success.choices.first?.message.content
                     let formatter = DateFormatter()
                     formatter.dateFormat = "yyyy-MM-dd"

@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import OpenAI
 import ProgressHUD
 
 enum Categories: String {
@@ -84,7 +83,6 @@ class ViewController: UIViewController {
     @IBOutlet weak var notifButton: UIButton!
     
     
-    var selectedItems = [String]()
     var items = [Product]()
     var filteredItems = [Product]()
     var lowerData = String()
@@ -92,9 +90,7 @@ class ViewController: UIViewController {
     var descSorted: Bool = false
     var aboutToExpireItems = [Product]()
     var expiryItems = [Product]()
-    
-    let openAI = OpenAI(apiToken: "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")
-    
+        
     override func viewDidLoad() {
         super.viewDidLoad()
         collectionView.register(UINib(nibName: "CategoryCell", bundle: Bundle.main),forCellWithReuseIdentifier: "CategoryCell")
@@ -108,7 +104,6 @@ class ViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationController?.setNavigationBarHidden(false, animated: false)
-        selectedItems.removeAll()
         getItems()
     }
     
@@ -158,23 +153,7 @@ class ViewController: UIViewController {
         viewController.modalTransitionStyle = .crossDissolve
         self.present(viewController, animated: true) {
             viewController.addItemListener = {
-                self.selectedItems.removeAll()
-                self.items.removeAll()
-                self.filteredItems.removeAll()
-                if let items = UserDefaultsManager().getDataForObject(type: [Product].self, forKey: .addItem) {
-                    self.items = items.sorted(by: { $0.expiryDate < $1.expiryDate})
-                    self.filteredItems = self.items
-                    for item in items {
-                        if let nextDate = Calendar.current.date(byAdding: .day, value: 5, to: Date()) {
-                            if item.expiryDate <= nextDate, item.expiryDate > Date() {
-                                self.aboutToExpireItems.append(item)
-                            } else if item.expiryDate <= Date() {
-                                self.expiryItems.append(item)
-                            }
-                        }
-                    }
-                    self.notifButton.setTitle("(\(self.aboutToExpireItems.count))", for: .normal)
-                }
+                self.getItems()
                 self.resetAll()
             }
         }

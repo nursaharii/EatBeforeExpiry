@@ -502,24 +502,25 @@
                                                         <color key="textColor" red="0.074509803920000006" green="0.1764705882" blue="0.32156862749999998" alpha="1" colorSpace="calibratedRGB"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="justified" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="G4I-Tf-heT">
-                                                        <rect key="frame" x="47" y="124" width="321" height="547"/>
-                                                        <fontDescription key="fontDescription" name="ArchivoCondensed-SemiBold" family="Archivo Condensed" pointSize="15"/>
-                                                        <color key="textColor" red="0.1764705882" green="0.22352941179999999" blue="0.2666666667" alpha="0.80000000000000004" colorSpace="calibratedRGB"/>
-                                                        <nil key="highlightedColor"/>
-                                                    </label>
+                                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" textAlignment="justified" translatesAutoresizingMaskIntoConstraints="NO" id="5Yw-jD-I7d">
+                                                        <rect key="frame" x="10" y="124" width="394" height="587"/>
+                                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                        <color key="textColor" red="0.43921568630000002" green="0.43921568630000002" blue="0.43921568630000002" alpha="0.80000000000000004" colorSpace="custom" customColorSpace="sRGB"/>
+                                                        <fontDescription key="fontDescription" name="ArchivoCondensed-SemiBold" family="Archivo Condensed" pointSize="14"/>
+                                                        <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                                    </textView>
                                                 </subviews>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <constraints>
-                                                    <constraint firstItem="G4I-Tf-heT" firstAttribute="leading" secondItem="NUE-ut-S6O" secondAttribute="leading" constant="47" id="3AB-zD-kpU"/>
+                                                    <constraint firstItem="5Yw-jD-I7d" firstAttribute="leading" secondItem="NUE-ut-S6O" secondAttribute="leading" constant="10" id="RoL-Og-vce"/>
                                                     <constraint firstItem="J9q-1X-MWg" firstAttribute="leading" secondItem="NUE-ut-S6O" secondAttribute="leading" constant="25" id="UMP-7M-eP9"/>
-                                                    <constraint firstAttribute="trailing" secondItem="G4I-Tf-heT" secondAttribute="trailing" constant="46" id="WoA-Sl-ccK"/>
                                                     <constraint firstItem="x2Y-G9-V8W" firstAttribute="top" secondItem="NUE-ut-S6O" secondAttribute="top" constant="15" id="Yov-YT-uHe"/>
                                                     <constraint firstItem="J9q-1X-MWg" firstAttribute="top" secondItem="x2Y-G9-V8W" secondAttribute="bottom" constant="28" id="aRC-65-tgV"/>
                                                     <constraint firstAttribute="trailing" secondItem="J9q-1X-MWg" secondAttribute="trailing" constant="25" id="kE8-16-If0"/>
                                                     <constraint firstItem="x2Y-G9-V8W" firstAttribute="centerX" secondItem="NUE-ut-S6O" secondAttribute="centerX" id="oCY-Vo-Lzw"/>
-                                                    <constraint firstAttribute="bottom" secondItem="G4I-Tf-heT" secondAttribute="bottom" constant="50" id="uRs-uM-h8X"/>
-                                                    <constraint firstItem="G4I-Tf-heT" firstAttribute="top" secondItem="J9q-1X-MWg" secondAttribute="bottom" constant="15" id="zgW-Fk-yFQ"/>
+                                                    <constraint firstAttribute="bottom" secondItem="5Yw-jD-I7d" secondAttribute="bottom" constant="10" id="tTa-4P-T6O"/>
+                                                    <constraint firstAttribute="trailing" secondItem="5Yw-jD-I7d" secondAttribute="trailing" constant="10" id="u7L-ew-1Ee"/>
+                                                    <constraint firstItem="5Yw-jD-I7d" firstAttribute="top" secondItem="J9q-1X-MWg" secondAttribute="bottom" constant="15" id="x4N-Ue-f6V"/>
                                                 </constraints>
                                                 <userDefinedRuntimeAttributes>
                                                     <userDefinedRuntimeAttribute type="number" keyPath="topRadius">
@@ -574,7 +575,7 @@
                     <navigationItem key="navigationItem" id="eTE-yw-ao3"/>
                     <size key="freeformSize" width="414" height="866"/>
                     <connections>
-                        <outlet property="recipeLabel" destination="G4I-Tf-heT" id="wFg-KV-MJC"/>
+                        <outlet property="recipeLabel" destination="5Yw-jD-I7d" id="SN1-Kf-Qi0"/>
                         <outlet property="scrollView" destination="19I-2w-ovE" id="r13-HL-MCm"/>
                         <outlet property="titleLabel" destination="J9q-1X-MWg" id="ZiB-oW-0EM"/>
                         <outlet property="visualEffectView" destination="ixm-T4-yw8" id="y1v-FX-iS7"/>
