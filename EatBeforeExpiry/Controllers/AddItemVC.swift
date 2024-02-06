@@ -12,6 +12,7 @@ import ProgressHUD
 
 class AddItemVC: UIViewController {
     
+    @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var productName: UITextField!
     @IBOutlet weak var categoryDropButton: UIButton!
     @IBOutlet weak var expiryDate: UITextField!
@@ -19,91 +20,38 @@ class AddItemVC: UIViewController {
     
     let datePicker = UIDatePicker()
     var newItem = Product()
+    var selectedItem: Product?
     
     typealias AddItemListener = () -> Void
     var addItemListener: AddItemListener?
     var isExpiryDate: Bool = false
     
     private lazy var fresh = UIAction(title: Categories.fresh.rawValue) { action in
-        self.categoryDropButton.setTitle(Categories.fresh.rawValue, for: .normal)
-        self.categoryDropButton.setTitleColor(.white, for: .normal)
-        self.categoryDropButton.contentHorizontalAlignment = .center
-        self.categoryDropButton.titleLabel?.font = .systemFont(ofSize: 17.0, weight: .bold)
-        self.categoryDropButton.titleEdgeInsets = UIEdgeInsets(top: 0,left: 0,bottom: 0,right: 0)
-        self.newItem.category = Categories.fresh.rawValue
-        self.categoryDropButton.backgroundColor = Categories.fresh.color
+        self.setCategoryButton(category: Categories.fresh)
     }
     private lazy var milk = UIAction(title: Categories.milk.rawValue) { action in
-        self.categoryDropButton.setTitle(Categories.milk.rawValue, for: .normal)
-        self.categoryDropButton.setTitleColor(.white, for: .normal)
-        self.categoryDropButton.contentHorizontalAlignment = .center
-        self.categoryDropButton.titleLabel?.font = .systemFont(ofSize: 17.0, weight: .bold)
-        self.categoryDropButton.titleEdgeInsets = UIEdgeInsets(top: 0,left: 0,bottom: 0,right: 0)
-        self.newItem.category = Categories.milk.rawValue
-        self.categoryDropButton.backgroundColor = Categories.milk.color
+        self.setCategoryButton(category: Categories.milk)
     }
     private lazy var dryFood = UIAction(title: Categories.dryFood.rawValue) { action in
-        self.categoryDropButton.setTitle(Categories.dryFood.rawValue, for: .normal)
-        self.categoryDropButton.setTitleColor(.white, for: .normal)
-        self.categoryDropButton.contentHorizontalAlignment = .center
-        self.categoryDropButton.titleLabel?.font = .systemFont(ofSize: 17.0, weight: .bold)
-        self.categoryDropButton.titleEdgeInsets = UIEdgeInsets(top: 0,left: 0,bottom: 0,right: 0)
-        self.newItem.category = Categories.dryFood.rawValue
-        self.categoryDropButton.backgroundColor = Categories.dryFood.color
+        self.setCategoryButton(category: Categories.dryFood)
     }
     private lazy var fastFood = UIAction(title: Categories.fastFood.rawValue) { action in
-        self.categoryDropButton.setTitle(Categories.fastFood.rawValue, for: .normal)
-        self.categoryDropButton.setTitleColor(.white, for: .normal)
-        self.categoryDropButton.contentHorizontalAlignment = .center
-        self.categoryDropButton.titleLabel?.font = .systemFont(ofSize: 17.0, weight: .bold)
-        self.categoryDropButton.titleEdgeInsets = UIEdgeInsets(top: 0,left: 0,bottom: 0,right: 0)
-        self.newItem.category = Categories.fastFood.rawValue
-        self.categoryDropButton.backgroundColor = Categories.fastFood.color
+        self.setCategoryButton(category: Categories.fastFood)
     }
     private lazy var drink = UIAction(title: Categories.drink.rawValue) { action in
-        self.categoryDropButton.setTitle(Categories.drink.rawValue, for: .normal)
-        self.categoryDropButton.setTitleColor(.white, for: .normal)
-        self.categoryDropButton.contentHorizontalAlignment = .center
-        self.categoryDropButton.titleLabel?.font = .systemFont(ofSize: 17.0, weight: .bold)
-        self.categoryDropButton.titleEdgeInsets = UIEdgeInsets(top: 0,left: 0,bottom: 0,right: 0)
-        self.newItem.category = Categories.drink.rawValue
-        self.categoryDropButton.backgroundColor = Categories.drink.color
+        self.setCategoryButton(category: Categories.drink)
     }
     private lazy var dessert = UIAction(title: Categories.dessert.rawValue) { action in
-        self.categoryDropButton.setTitle(Categories.dessert.rawValue, for: .normal)
-        self.categoryDropButton.setTitleColor(.white, for: .normal)
-        self.categoryDropButton.contentHorizontalAlignment = .center
-        self.categoryDropButton.titleLabel?.font = .systemFont(ofSize: 17.0, weight: .bold)
-        self.categoryDropButton.titleEdgeInsets = UIEdgeInsets(top: 0,left: 0,bottom: 0,right: 0)
-        self.newItem.category = Categories.dessert.rawValue
-        self.categoryDropButton.backgroundColor = Categories.dessert.color
+        self.setCategoryButton(category: Categories.dessert)
     }
     private lazy var sauce = UIAction(title: Categories.sauce.rawValue) { action in
-        self.categoryDropButton.setTitle(Categories.sauce.rawValue, for: .normal)
-        self.categoryDropButton.setTitleColor(.black, for: .normal)
-        self.categoryDropButton.contentHorizontalAlignment = .center
-        self.categoryDropButton.titleLabel?.font = .systemFont(ofSize: 17.0, weight: .bold)
-        self.categoryDropButton.titleEdgeInsets = UIEdgeInsets(top: 0,left: 0,bottom: 0,right: 0)
-        self.newItem.category = Categories.sauce.rawValue
-        self.categoryDropButton.backgroundColor = Categories.sauce.color
+        self.setCategoryButton(category: Categories.sauce)
     }
     private lazy var bread = UIAction(title: Categories.bread.rawValue) { action in
-        self.categoryDropButton.setTitle(Categories.bread.rawValue, for: .normal)
-        self.categoryDropButton.setTitleColor(.white, for: .normal)
-        self.categoryDropButton.contentHorizontalAlignment = .center
-        self.categoryDropButton.titleLabel?.font = .systemFont(ofSize: 17.0, weight: .bold)
-        self.categoryDropButton.titleEdgeInsets = UIEdgeInsets(top: 0,left: 0,bottom: 0,right: 0)
-        self.newItem.category = Categories.bread.rawValue
-        self.categoryDropButton.backgroundColor = Categories.bread.color
+        self.setCategoryButton(category: Categories.bread)
     }
     private lazy var other = UIAction(title: Categories.other.rawValue) { action in
-        self.categoryDropButton.setTitle(Categories.other.rawValue, for: .normal)
-        self.categoryDropButton.setTitleColor(.white, for: .normal)
-        self.categoryDropButton.contentHorizontalAlignment = .center
-        self.categoryDropButton.titleLabel?.font = .systemFont(ofSize: 17.0, weight: .bold)
-        self.categoryDropButton.titleEdgeInsets = UIEdgeInsets(top: 0,left: 0,bottom: 0,right: 0)
-        self.newItem.category = Categories.other.rawValue
-        self.categoryDropButton.backgroundColor = Categories.other.color
+        self.setCategoryButton(category: Categories.other)
     }
     
     private lazy var elements:[UIAction] = [fresh,milk,dryFood,fastFood,drink,dessert,sauce,bread,other].reversed()
@@ -117,8 +65,24 @@ class AddItemVC: UIViewController {
         categoryDropButton.menu = menu
         prepareUI()
         createDatePicker()
-        self.hideKeyboardWhenTappedAround() 
+        self.hideKeyboardWhenTappedAround()
         
+        if let selectedItem = selectedItem {
+            titleLabel.text = "Ürün Düzenle"
+            newItem = selectedItem
+            isExpiryDate = true
+            let formatter = DateFormatter()
+            formatter.dateStyle = .medium
+            formatter.timeStyle = .none
+            
+            productName.text = selectedItem.productName
+            expiryDate.text = formatter.string(from: selectedItem.expiryDate)
+            for category in Categories.allCases {
+                if category.rawValue == selectedItem.category {
+                    setCategoryButton(category: category)
+                }
+            }
+        }
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -155,6 +119,21 @@ class AddItemVC: UIViewController {
         categoryDropButton.titleEdgeInsets = UIEdgeInsets(top: 0,left: 25,bottom: 0,right: 0)
     }
     
+    func setCategoryButton(category: Categories) {
+        self.categoryDropButton.setTitle(category.rawValue, for: .normal)
+        self.categoryDropButton.setTitleColor(.white, for: .normal)
+        self.categoryDropButton.contentHorizontalAlignment = .center
+        self.categoryDropButton.titleLabel?.font = .systemFont(ofSize: 17.0, weight: .bold)
+        self.categoryDropButton.titleEdgeInsets = UIEdgeInsets(top: 0,left: 0,bottom: 0,right: 0)
+        self.newItem.category = category.rawValue
+        self.categoryDropButton.backgroundColor = category.color
+        
+        if var selectedItem = selectedItem {
+            selectedItem.category = category.rawValue
+            self.selectedItem = selectedItem
+        }
+    }
+    
     func createDatePicker() {
         
         //DatePicker'da oluşan tarihi textfield'a kaydetmek için kullancağımız butonu koyacağımız barı oluşturuyoruz.
@@ -181,6 +160,10 @@ class AddItemVC: UIViewController {
         //Text field'a date picker'dan gelen değeri yazdırıyoruz.
         expiryDate.text = formatter.string(from: datePicker.date)
         newItem.expiryDate = datePicker.date
+        if var selectedItem = selectedItem {
+            selectedItem.expiryDate = datePicker.date
+            self.selectedItem = selectedItem
+        }
         isExpiryDate = true
         self.view.endEditing(true)
     }
@@ -193,11 +176,21 @@ class AddItemVC: UIViewController {
             ProgressHUD.failed("Lütfen ürün bilgilerini eksiksiz girdiğinizden emin olunuz.", interaction: true, delay: 2)
         } else {
             if var items = UserDefaultsManager().getDataForObject(type: [Product].self, forKey: .addItem) {
-                if let maxId = items.max(by: {$0.id<$1.id})?.id {
-                    newItem.id = maxId + 1
+                
+                if var selectedItem = selectedItem {
+                    if let removeIndex = items.firstIndex(where: {$0.id == selectedItem.id }) {
+                        items.remove(at: removeIndex)
+                        selectedItem.productName = productName.text ?? ""
+                        items.append(selectedItem)
+                        UserDefaultsManager().setDataForObject(value: items, key: .addItem)
+                    }
+                } else {
+                    if let maxId = items.max(by: {$0.id<$1.id})?.id {
+                        newItem.id = maxId + 1
+                    }
+                    items.append(newItem)
+                    UserDefaultsManager().setDataForObject(value: items, key: .addItem)
                 }
-                items.append(newItem)
-                UserDefaultsManager().setDataForObject(value: items, key: .addItem)
             } else {
                 UserDefaultsManager().setDataForObject(value: [newItem], key: .addItem)
             }

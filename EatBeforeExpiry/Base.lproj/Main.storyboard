@@ -425,6 +425,7 @@
                         <outlet property="expiryDate" destination="s6M-cy-GpO" id="YUz-VV-WZb"/>
                         <outlet property="productName" destination="Rav-nC-HN3" id="IJX-3K-oTh"/>
                         <outlet property="saveButton" destination="1o3-tA-l1e" id="Uy1-9Z-Yjv"/>
+                        <outlet property="titleLabel" destination="tvG-d2-Ddv" id="MKq-Dm-b7M"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="TGg-ap-dML" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

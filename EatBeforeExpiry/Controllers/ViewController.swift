@@ -8,7 +8,7 @@
 import UIKit
 import ProgressHUD
 
-enum Categories: String {
+enum Categories: String, CaseIterable {
     case all = "Tümü"
     case fresh = "Taze Ürünler"
     case milk = "Süt Ürünleri"
@@ -368,6 +368,26 @@ extension ViewController: UITableViewDelegate,UITableViewDataSource {
                 }
             }
             getItems()
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        var items = [Product]()
+        if !searchedItems.isEmpty {
+            items = searchedItems
+        } else {
+            items = filteredItems
+        }
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        let viewController = storyboard.instantiateViewController(withIdentifier: "AddItemVC") as! AddItemVC
+        viewController.modalPresentationStyle = .overFullScreen
+        viewController.modalTransitionStyle = .crossDissolve
+        viewController.selectedItem = items[indexPath.row]
+        self.present(viewController, animated: true) {
+            viewController.addItemListener = {
+                self.getItems()
+                self.resetAll()
+            }
         }
     }
 }
