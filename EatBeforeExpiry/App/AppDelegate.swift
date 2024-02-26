@@ -11,11 +11,21 @@ import DropDown
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
-
+    var window: UIWindow?
+    var homePageCoordinator: HomePageCoordinator?
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        Thread.sleep(forTimeInterval: 0.4)
-        DropDown.startListeningToKeyboard()
+        window = UIWindow(frame: UIScreen.main.bounds)
+        
+         let navController = UINavigationController()
+
+        homePageCoordinator = HomePageCoordinator()
+        homePageCoordinator?.navigationController = navController
+        homePageCoordinator?.start()
+
+         window?.rootViewController = navController
+         window?.makeKeyAndVisible()
         return true
     }
 

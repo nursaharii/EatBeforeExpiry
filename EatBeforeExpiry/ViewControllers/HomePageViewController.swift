@@ -7,6 +7,7 @@
 
 import UIKit
 import ProgressHUD
+import Combine
 
 enum Categories: String, CaseIterable {
     case all = "Tümü"
@@ -70,7 +71,7 @@ enum Categories: String, CaseIterable {
     }
 }
 
-class ViewController: UIViewController {
+class HomePageViewController: UIViewController {
     
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var collectionView: UICollectionView!
@@ -82,12 +83,11 @@ class ViewController: UIViewController {
     @IBOutlet weak var refreshImage: UIImageView!
     @IBOutlet weak var notifButton: UIButton!
     
+    var viewModel = HomePageViewModel()
+    var coordinator: HomePageCoordinator?
     
-    var items = [Product]()
-    var filteredItems = [Product]()
+    private var cancellables: Set<AnyCancellable> = []
     var lowerData = String()
-    var searchedItems = [Product]()
-    var descSorted: Bool = false
     var aboutToExpireItems = [Product]()
     var expiryItems = [Product]()
         
@@ -104,73 +104,55 @@ class ViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationController?.setNavigationBarHidden(false, animated: false)
-        getItems()
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
+        bindViewModel()
     }
     
-    func getItems() {
-        items.removeAll()
-        expiryItems.removeAll()
-        aboutToExpireItems.removeAll()
-        filteredItems.removeAll()
-        if let items = UserDefaultsManager().getDataForObject(type: [Product].self, forKey: .addItem) {
-            self.items = items.sorted(by: { $0.expiryDate < $1.expiryDate})
-            orderByButton.setImage(UIImage(named: "arrow-up"), for: .normal)
-            
-            for item in items {
-                if let nextDate = Calendar.current.date(byAdding: .day, value: 5, to: Date()) {
-                    if item.expiryDate <= nextDate, item.expiryDate > Date() {
-                        aboutToExpireItems.append(item)
-                    } else if item.expiryDate <= Date() {
-                        expiryItems.append(item)
-                    }
+    func bindViewModel() {
+        ProgressHUD.animate()
+        viewModel.getItems()
+        viewModel.$filteredItems
+            .receive(on: RunLoop.main)
+            .sink { [weak self] items in
+            guard let self = self else { return }
+                ProgressHUD.remove()
+                if viewModel.descSorted {
+                    self.orderByButton.setImage(UIImage(named: "arrow-up"), for: .normal)
+                } else {
+                    self.orderByButton.setImage(UIImage(named: "arrow-down"), for: .normal)
                 }
+            
+            self.notifButton.setTitle("(\(viewModel.aboutToExpireItems.count))", for: .normal)
+            if items.count > 0 {
+                tableView.isHidden = false
+                emptyLabel.isHidden = true
+            } else {
+                tableView.isHidden = true
+                emptyLabel.isHidden = false
+                emptyLabel.textColor = .grayCategory
+                emptyLabel.text = "Listenizde ürün bulunmamakta..."
             }
-            notifButton.setTitle("(\(aboutToExpireItems.count))", for: .normal)
-        } else {
-            notifButton.setTitle("(\(aboutToExpireItems.count))", for: .normal)
-        }
-        filteredItems = items
-        if filteredItems.count > 0 {
-            tableView.isHidden = false
-            emptyLabel.isHidden = true
-        } else {
-            tableView.isHidden = true
-            emptyLabel.isHidden = false
-            emptyLabel.textColor = .grayCategory
-        }
-        tableView.reloadData()
+                self.tableView.reloadData()
+            }.store(in: &cancellables)
     }
+    
+  
     
     @IBAction func goToAddItemVC(_ sender: Any) {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let viewController = storyboard.instantiateViewController(withIdentifier: "AddItemVC") as! AddItemVC
-        viewController.modalPresentationStyle = .overFullScreen
-        viewController.modalTransitionStyle = .crossDissolve
-        self.present(viewController, animated: true) {
-            viewController.addItemListener = {
-                self.getItems()
-                self.resetAll()
-            }
-        }
+        coordinator?.goToAddItemVC(nil, {
+            self.viewModel.getItems()
+            self.resetAll()
+        })
     }
     
     @IBAction func showRecipe(_ sender: Any) {
-        if items.isEmpty {
+        if viewModel.items.isEmpty {
             ProgressHUD.banner("Listeniz Boş", "Yemek önerisi alabilmek için lütfen listenize ürün ekleyiniz.", delay: 3.0)
         } else {
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let viewController = storyboard.instantiateViewController(withIdentifier: "RecipeVC") as! RecipeViewController
-            viewController.modalPresentationStyle = .overFullScreen
-            viewController.modalTransitionStyle = .coverVertical
-            viewController.items = items
-            viewController.recipeTitle = "GÜNÜN ÖNERİSİ"
-            viewController.category = "all"
-            self.present(viewController, animated: true)
+            coordinator?.goToRecipeVC(viewModel.items, "GÜNÜN ÖNERİSİ", "all")
         }
     }
     
@@ -190,70 +172,28 @@ class ViewController: UIViewController {
     
     
     @IBAction func orderBy(_ sender: Any) {
-        if descSorted {
-            filteredItems = filteredItems.sorted(by: { $0.expiryDate < $1.expiryDate})
-            orderByButton.setImage(UIImage(named: "arrow-up"), for: .normal)
-        } else {
-            filteredItems = filteredItems.sorted(by: { $0.expiryDate > $1.expiryDate})
-            orderByButton.setImage(UIImage(named: "arrow-down"), for: .normal)
-        }
-        descSorted = !descSorted
+        let _ = viewModel.orderByDescending()
         tableView.reloadData()
     }
     
     @IBAction func goToNotificationVC(_ sender: Any) {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let viewController = storyboard.instantiateViewController(withIdentifier: "NotificationVC") as! NotificationViewController
-        viewController.modalPresentationStyle = .overFullScreen
-        viewController.modalTransitionStyle = .crossDissolve
-        viewController.aboutToExpireItems = aboutToExpireItems
-        viewController.expiryItems = expiryItems
-        self.present(viewController, animated: true)
+        coordinator?.goToNotificationVC(aboutToExpireItems, expiryItems)
     }
     
     func resetAll() {
-        if !descSorted {
-            filteredItems = items.sorted(by: { $0.expiryDate < $1.expiryDate})
-            orderByButton.setImage(UIImage(named: "arrow-up"), for: .normal)
-        } else {
-            filteredItems = items.sorted(by: { $0.expiryDate > $1.expiryDate})
-            orderByButton.setImage(UIImage(named: "arrow-down"), for: .normal)
-        }
-        searchedItems.removeAll()
+        viewModel.resetAll()
         searchTextfield.text = ""
-        if filteredItems.count > 0 {
-            tableView.isHidden = false
-            emptyLabel.isHidden = true
-        } else {
-            tableView.isHidden = true
-            emptyLabel.isHidden = false
-            emptyLabel.textColor = .grayCategory
-            emptyLabel.text = "Listenizde ürün bulunmamakta..."
-            
-        }
         tableView.reloadData()
         collectionView.reloadData()
     }
-    
-    func search() {
-        emptyLabel.textColor = .grayCategory
-        searchedItems = filteredItems.filter({ item in
-            if let _ = item.productName.prefix(lowerData.count).lowercased().range(of: lowerData,options: .caseInsensitive) {
-                emptyLabel.isHidden = true
-                tableView.isHidden = false
-                return true
-            }
-            return false
-        })
-    }
 }
 
-extension ViewController: UITableViewDelegate,UITableViewDataSource {
+extension HomePageViewController: UITableViewDelegate,UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if !searchedItems.isEmpty {
-            return searchedItems.count
+        if !viewModel.searchedItems.isEmpty {
+            return viewModel.searchedItems.count
         } else {
-            return filteredItems.count
+            return viewModel.filteredItems.count
         }
     }
     
@@ -261,10 +201,10 @@ extension ViewController: UITableViewDelegate,UITableViewDataSource {
         
         if let cell = tableView.dequeueReusableCell(withIdentifier: ItemCell.identifier, for: indexPath) as? ItemCell {
             var item = [Product]()
-            if !searchedItems.isEmpty {
-                item = searchedItems
+            if !viewModel.searchedItems.isEmpty {
+                item = viewModel.searchedItems
             } else {
-                item = filteredItems
+                item = viewModel.filteredItems
             }
             cell.expiryDate.edgeInset = UIEdgeInsets(top: 5, left: 10, bottom: 5, right: 10)
             cell.category.edgeInset = UIEdgeInsets(top: 5, left: 10, bottom: 5, right: 10)
@@ -277,19 +217,11 @@ extension ViewController: UITableViewDelegate,UITableViewDataSource {
             formatter.timeStyle = .none
             cell.expiryDate.text = formatter.string(from: item[indexPath.row].expiryDate)
             
-            //            if selectedItems.contains(items[indexPath.row].productName) {
-            //                cell.selectImage.image = UIImage(named: "select-filled")
-            //            } else {
-            //                cell.selectImage.image = UIImage(named: "select-empty")
-            //            }
-            
             let today = Date()
             if let nextDate = Calendar.current.date(byAdding: .day, value: 5, to: today) {
                 if item[indexPath.row].expiryDate <= today {
                     cell.expiryDate.backgroundColor = .errorRed
                     cell.expiryDate.textColor = .white
-                    //                    cell.selectItemButton.isEnabled = false
-                    //                    cell.selectImage.image = UIImage(named:"select-disabled")
                 } else if item[indexPath.row].expiryDate <= nextDate, item[indexPath.row].expiryDate > Date() {
                     cell.expiryDate.backgroundColor = .yellow
                     cell.expiryDate.textColor = .black
@@ -321,16 +253,6 @@ extension ViewController: UITableViewDelegate,UITableViewDataSource {
             default:
                 cell.category.backgroundColor = Categories.fresh.color
             }
-            
-            //            cell.selectItemCallback = {
-            //                if let removeIndex = self.selectedItems.firstIndex(of: self.items[indexPath.row].productName) {
-            //                    self.selectedItems.remove(at: removeIndex)
-            //                    cell.selectImage.image = UIImage(named: "select-empty")
-            //                } else {
-            //                    self.selectedItems.append(self.items[indexPath.row].productName)
-            //                    cell.selectImage.image = UIImage(named: "select-filled")
-            //                }
-            //            }
             return cell
         }
         
@@ -339,60 +261,27 @@ extension ViewController: UITableViewDelegate,UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            if searchedItems.count > 0 {
-                let item = searchedItems
-                if let removeIndex = self.filteredItems.firstIndex(where: {$0.id == item[indexPath.row].id }) {
-                    filteredItems.remove(at: removeIndex)
-                }
-                if let removeIndex = self.items.firstIndex(where: {$0.id == item[indexPath.row].id }) {
-                    self.items.remove(at: removeIndex)
-                    UserDefaultsManager().setDataForObject(value: items, key: .addItem)
-                }
-                searchedItems.remove(at: indexPath.row)
-                search()
-            } else {
-                if let removeIndex = self.items.firstIndex(where: {$0.id == filteredItems[indexPath.row].id }) {
-                    self.items.remove(at: removeIndex)
-                    UserDefaultsManager().setDataForObject(value: items, key: .addItem)
-                }
-                filteredItems.remove(at: indexPath.row)
-                if filteredItems.isEmpty {
-                    tableView.isHidden = true
-                    emptyLabel.isHidden = false
-                    emptyLabel.textColor = .grayCategory
-                    emptyLabel.text = "Listenizde ürün bulunmamakta..."
-                } else {
-                    tableView.isHidden = false
-                    emptyLabel.isHidden = true
-                    
-                }
-            }
-            getItems()
+            viewModel.tableViewDelete(indexPath)
         }
+        viewModel.getItems()
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         var items = [Product]()
-        if !searchedItems.isEmpty {
-            items = searchedItems
+        if !viewModel.searchedItems.isEmpty {
+            items = viewModel.searchedItems
         } else {
-            items = filteredItems
+            items = viewModel.filteredItems
         }
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let viewController = storyboard.instantiateViewController(withIdentifier: "AddItemVC") as! AddItemVC
-        viewController.modalPresentationStyle = .overFullScreen
-        viewController.modalTransitionStyle = .crossDissolve
-        viewController.selectedItem = items[indexPath.row]
-        self.present(viewController, animated: true) {
-            viewController.addItemListener = {
-                self.getItems()
-                self.resetAll()
-            }
-        }
+        coordinator?.goToAddItemVC(items[indexPath.row], {
+            self.viewModel.getItems()
+            self.resetAll()
+
+        })
     }
 }
 
-extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+extension HomePageViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         10
     }
@@ -453,20 +342,18 @@ extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource, 
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if collectionView.dequeueReusableCell(withReuseIdentifier: CategoryCell.identifier, for: indexPath) is CategoryCell {
-            filteredItems.removeAll()
+            viewModel.filteredItems.removeAll()
             emptyLabel.textColor = .grayCategory
             switch indexPath.row {
             case 0:
-                if !descSorted {
-                    filteredItems = items.sorted(by: { $0.expiryDate < $1.expiryDate})
+                if viewModel.orderByDescending() {
                     orderByButton.setImage(UIImage(named: "arrow-up"), for: .normal)
                 } else {
-                    filteredItems = items.sorted(by: { $0.expiryDate > $1.expiryDate})
-                    orderByButton.setImage(UIImage(named: "arrow-down"), for: .normal)
+                    orderByButton.setImage(UIImage(named: "arrow-dowm"), for: .normal)
                 }
-                searchedItems.removeAll()
+                viewModel.searchedItems.removeAll()
                 searchTextfield.text = ""
-                if filteredItems.count > 0 {
+                if viewModel.filteredItems.count > 0 {
                     tableView.isHidden = false
                     emptyLabel.isHidden = true
                 } else {
@@ -477,101 +364,94 @@ extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource, 
                     
                 }
             case 1:
-                filteredItems = items.filter({return $0.category == Categories.fresh.rawValue})
-                if filteredItems.isEmpty {
+                if let _ = viewModel.filter(Categories.fresh.rawValue) {
+                    emptyLabel.isHidden = true
+                    tableView.isHidden = false
+                } else {
                     emptyLabel.text = "Listenizde " + Categories.fresh.rawValue + " kategorisinde ürün bulunmamaktadır."
                     emptyLabel.isHidden = false
                     tableView.isHidden = true
                 }
             case 2:
-                filteredItems = items.filter({return $0.category == Categories.milk.rawValue})
-                if filteredItems.isEmpty {
+                if let _ = viewModel.filter(Categories.milk.rawValue) {
+                        emptyLabel.isHidden = true
+                        tableView.isHidden = false
+                } else {
                     emptyLabel.text = "Listenizde " + Categories.milk.rawValue + " kategorisinde ürün bulunmamaktadır."
                     emptyLabel.isHidden = false
                     tableView.isHidden = true
-                } else {
-                    emptyLabel.isHidden = true
-                    tableView.isHidden = false
                 }
             case 3:
-                filteredItems = items.filter({return $0.category == Categories.dryFood.rawValue})
-                if filteredItems.isEmpty {
+                if let _ = viewModel.filter(Categories.dryFood.rawValue) {
+                    emptyLabel.isHidden = true
+                    tableView.isHidden = false
+                } else {
                     emptyLabel.text = "Listenizde " + Categories.dryFood.rawValue + " kategorisinde ürün bulunmamaktadır."
                     emptyLabel.isHidden = false
                     tableView.isHidden = true
-                } else {
-                    emptyLabel.isHidden = true
-                    tableView.isHidden = false
                 }
             case 4:
-                filteredItems = items.filter({return $0.category == Categories.fastFood.rawValue})
-                if filteredItems.isEmpty {
+                if let _ = viewModel.filter(Categories.fastFood.rawValue) {
+                    emptyLabel.isHidden = true
+                    tableView.isHidden = false
+                } else {
                     emptyLabel.text = "Listenizde " + Categories.fastFood.rawValue + " kategorisinde ürün bulunmamaktadır."
                     emptyLabel.isHidden = false
                     tableView.isHidden = true
-                } else {
-                    emptyLabel.isHidden = true
-                    tableView.isHidden = false
                 }
             case 5:
-                filteredItems = items.filter({return $0.category == Categories.drink.rawValue})
-                if filteredItems.isEmpty {
+                if let _ = viewModel.filter(Categories.drink.rawValue) {
+                    emptyLabel.isHidden = true
+                    tableView.isHidden = false
+                } else {
                     emptyLabel.text = "Listenizde " + Categories.drink.rawValue + " kategorisinde ürün bulunmamaktadır."
                     emptyLabel.isHidden = false
                     tableView.isHidden = true
-                } else {
-                    emptyLabel.isHidden = true
-                    tableView.isHidden = false
                 }
             case 6:
-                filteredItems = items.filter({return $0.category == Categories.dessert.rawValue})
-                if filteredItems.isEmpty {
+                if let _ = viewModel.filter(Categories.dessert.rawValue) {
+                    emptyLabel.isHidden = true
+                    tableView.isHidden = false
+                } else {
                     emptyLabel.text = "Listenizde " + Categories.dessert.rawValue + " kategorisinde ürün bulunmamaktadır."
                     emptyLabel.isHidden = false
                     tableView.isHidden = true
-                } else {
-                    emptyLabel.isHidden = true
-                    tableView.isHidden = false
                 }
             case 7:
-                filteredItems = items.filter({return $0.category == Categories.sauce.rawValue})
-                if filteredItems.isEmpty {
+                if let _ = viewModel.filter(Categories.sauce.rawValue) {
+                    emptyLabel.isHidden = true
+                    tableView.isHidden = false
+                } else {
                     emptyLabel.text = "Listenizde " + Categories.sauce.rawValue + " kategorisinde ürün bulunmamaktadır."
                     emptyLabel.isHidden = false
                     tableView.isHidden = true
-                } else {
-                    emptyLabel.isHidden = true
-                    tableView.isHidden = false
                 }
             case 8:
-                filteredItems = items.filter({return $0.category == Categories.bread.rawValue})
-                if filteredItems.isEmpty {
+                if let _ = viewModel.filter(Categories.bread.rawValue){
+                    emptyLabel.isHidden = true
+                    tableView.isHidden = false
+                } else {
                     emptyLabel.text = "Listenizde " + Categories.bread.rawValue + " kategorisinde ürün bulunmamaktadır."
                     emptyLabel.isHidden = false
                     tableView.isHidden = true
-                } else {
-                    emptyLabel.isHidden = true
-                    tableView.isHidden = false
                 }
             case 9:
-                filteredItems = items.filter({return $0.category == Categories.other.rawValue})
-                if filteredItems.isEmpty {
+                if let _ = viewModel.filter(Categories.other.rawValue){
+                    emptyLabel.isHidden = true
+                    tableView.isHidden = false
+                } else {
                     emptyLabel.text = "Listenizde " + Categories.other.rawValue + " kategorisinde ürün bulunmamaktadır."
                     emptyLabel.isHidden = false
                     tableView.isHidden = true
-                } else {
-                    emptyLabel.isHidden = true
-                    tableView.isHidden = false
                 }
             default:
-                filteredItems = items.filter({return $0.category == Categories.other.rawValue})
-                if filteredItems.isEmpty {
+                if let _ = viewModel.filter(Categories.other.rawValue){
+                    emptyLabel.isHidden = true
+                    tableView.isHidden = false
+                } else {
                     emptyLabel.text = "Listenizde " + Categories.other.rawValue + " kategorisinde ürün bulunmamaktadır."
                     emptyLabel.isHidden = false
                     tableView.isHidden = true
-                } else {
-                    emptyLabel.isHidden = true
-                    tableView.isHidden = false
                 }
             }
             tableView.reloadData()
@@ -579,7 +459,7 @@ extension ViewController: UICollectionViewDelegate, UICollectionViewDataSource, 
     }
 }
 
-extension ViewController : UITextFieldDelegate {
+extension HomePageViewController : UITextFieldDelegate {
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         lowerData = (textField.text! + string).lowercased()
@@ -589,8 +469,9 @@ extension ViewController : UITextFieldDelegate {
             lowerData = String(deletedData)
         }
         if lowerData.count >= 1 {
-            self.search()
-            if searchedItems.isEmpty {
+            viewModel.searchTerm = lowerData
+            emptyLabel.textColor = .grayCategory
+            if viewModel.searchedItems.isEmpty {
                 emptyLabel.isHidden = false
                 tableView.isHidden = true
                 emptyLabel.text = "\(lowerData) listenizde bulunamadı."
@@ -600,7 +481,7 @@ extension ViewController : UITextFieldDelegate {
                 tableView.reloadData()
             }
         } else {
-            searchedItems.removeAll()
+            viewModel.searchedItems.removeAll()
             emptyLabel.isHidden = true
             tableView.isHidden = false
             tableView.reloadData()
@@ -609,7 +490,7 @@ extension ViewController : UITextFieldDelegate {
     }
     
     func textFieldShouldClear(_ textField: UITextField) -> Bool {
-        searchedItems.removeAll()
+        viewModel.searchedItems.removeAll()
         emptyLabel.isHidden = true
         tableView.isHidden = false
         tableView.reloadData()

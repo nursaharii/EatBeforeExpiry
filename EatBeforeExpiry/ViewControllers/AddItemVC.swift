@@ -19,12 +19,25 @@ class AddItemVC: UIViewController {
     @IBOutlet weak var saveButton: UIButton!
     
     let datePicker = UIDatePicker()
-    var newItem = Product()
-    var selectedItem: Product?
+    var selectedItem: Product? = Product() {
+        didSet {
+            if let item = selectedItem {
+                viewModel.selectedItem = item
+                viewModel.newItem = item
+            }
+        }
+    }
+    
+    var newItemProductName: String = "" {
+        didSet {
+            viewModel.newItem.productName = newItemProductName
+        }
+    }
     
     typealias AddItemListener = () -> Void
     var addItemListener: AddItemListener?
-    var isExpiryDate: Bool = false
+    
+    var viewModel = AddItemViewModel()
     
     private lazy var fresh = UIAction(title: Categories.fresh.rawValue) { action in
         self.setCategoryButton(category: Categories.fresh)
@@ -69,8 +82,6 @@ class AddItemVC: UIViewController {
         
         if let selectedItem = selectedItem {
             titleLabel.text = "Ürün Düzenle"
-            newItem = selectedItem
-            isExpiryDate = true
             let formatter = DateFormatter()
             formatter.dateStyle = .medium
             formatter.timeStyle = .none
@@ -125,18 +136,12 @@ class AddItemVC: UIViewController {
         self.categoryDropButton.contentHorizontalAlignment = .center
         self.categoryDropButton.titleLabel?.font = .systemFont(ofSize: 17.0, weight: .bold)
         self.categoryDropButton.titleEdgeInsets = UIEdgeInsets(top: 0,left: 0,bottom: 0,right: 0)
-        self.newItem.category = category.rawValue
         self.categoryDropButton.backgroundColor = category.color
-        
-        if var selectedItem = selectedItem {
-            selectedItem.category = category.rawValue
-            self.selectedItem = selectedItem
-        }
+        viewModel.setCategory(category)
     }
     
     func createDatePicker() {
-        
-        //DatePicker'da oluşan tarihi textfield'a kaydetmek için kullancağımız butonu koyacağımız barı oluşturuyoruz.
+        //To set textfield from datepicker
         let toolbar = UIToolbar()
         toolbar.sizeToFit()
         
@@ -151,61 +156,29 @@ class AddItemVC: UIViewController {
     }
     
     @objc func doneButtonClicked() {
-        
-        //Yazdıracağımız tarihin formatını belirliyoruz.
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
         formatter.timeStyle = .none
-        
-        //Text field'a date picker'dan gelen değeri yazdırıyoruz.
         expiryDate.text = formatter.string(from: datePicker.date)
-        newItem.expiryDate = datePicker.date
-        if var selectedItem = selectedItem {
-            selectedItem.expiryDate = datePicker.date
-            self.selectedItem = selectedItem
-        }
-        isExpiryDate = true
+        viewModel.setExpiryDate(datePicker.date)
         self.view.endEditing(true)
     }
     
     
     @IBAction func addItem(_ sender: Any) {
-        
-        newItem.productName = productName.text ?? ""
-        if newItem.category.isEmpty || newItem.productName == "" || !isExpiryDate {
-            ProgressHUD.failed("Lütfen ürün bilgilerini eksiksiz girdiğinizden emin olunuz.", interaction: true, delay: 2)
-        } else {
-            if var items = UserDefaultsManager().getDataForObject(type: [Product].self, forKey: .addItem) {
-                
-                if var selectedItem = selectedItem {
-                    if let removeIndex = items.firstIndex(where: {$0.id == selectedItem.id }) {
-                        items.remove(at: removeIndex)
-                        selectedItem.productName = productName.text ?? ""
-                        items.append(selectedItem)
-                        UserDefaultsManager().setDataForObject(value: items, key: .addItem)
-                    }
-                } else {
-                    if let maxId = items.max(by: {$0.id<$1.id})?.id {
-                        newItem.id = maxId + 1
-                    }
-                    items.append(newItem)
-                    UserDefaultsManager().setDataForObject(value: items, key: .addItem)
-                }
-            } else {
-                UserDefaultsManager().setDataForObject(value: [newItem], key: .addItem)
-            }
+        newItemProductName = productName.text ?? ""
+        if viewModel.validateFields() {
+            viewModel.addItem()
             self.dismiss(animated: true) {
                 self.addItemListener?()
             }
+        } else {
+            ProgressHUD.failed("Lütfen ürün bilgilerini eksiksiz girdiğinizden emin olunuz.", interaction: true, delay: 2)
         }
     }
     
     @IBAction func cancel(_ sender: Any) {
         self.dismiss(animated: true)
     }
-}
-
-extension Notification.Name {
-    static let myCustomValueUpdated = Notification.Name("myCustomValueUpdated")
 }
 
