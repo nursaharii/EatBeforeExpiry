@@ -73,3 +73,7 @@
 
 ## Need Help?
 If you need further assistance or have any questions, please contact me at nursahari@hotmail.com.
+
+## License
+
+[MIT](https://github.com/nursaharii/EatBeforeExpiry/blob/main/LICENSE)
