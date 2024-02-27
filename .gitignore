@@ -1,1 +1,80 @@
+# Xcode
+##
+.DS_Store
+*.xcodeproj/*xcuserdata/
+*.xcodeproj/xcshareddata/Blueprint.xcscmblueprint
+*.xcworkspace/*xcuserdata/
+*.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
+xcuserdata/
+DerivedData/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+build/
+*.pbxuser
+!default.pbxuser
+*.perspective
+!default.perspective
+*.perspectivev3
+!default.perspectivev3
+*.xccheckout
+*.moved-aside
+*.xcuserstate
+*.xcscmblueprint
+*.xcworkspacedata
+*.orig
+
+# CocoaPods
+##
 Pods/
+
+# Carthage
+##
+Carthage/Build
+
+# Fastlane
+##
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+
+# Yarn
+##
+.yarn/
+.yarn-cache/
+
+# Swift Package Manager
+##
+.build/
+Packages/
+Package.resolved
+
+# OS X
+##
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Thumbnails
+##
+._*
+
+# Files that might appear in the root of a volume
+##
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Directories potentially created on remote AFP share
+##
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
