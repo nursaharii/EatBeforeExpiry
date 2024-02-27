@@ -12,6 +12,14 @@
  This application is a comprehensive app designed to help you monitor, manage, and make the most out of your grocery items. Keep track of expiration dates, categorize products, and discover recipes to optimize your food consumption and reduce waste.
 </p>
 
+## Screenshots
+<img src="https://github.com/nursaharii/EatBeforeExpiry/assets/33926714/015ab233-de45-46d2-92df-47f195ee2e08" width="240">
+<img src="https://github.com/nursaharii/EatBeforeExpiry/assets/33926714/ff3ee442-5ed3-47ab-b225-a628a1bad746" width="240">
+<img src="https://github.com/nursaharii/EatBeforeExpiry/assets/33926714/47c010dc-6aa8-4180-8d56-efc16d64c7d8" width="240">
+<img src="https://github.com/nursaharii/EatBeforeExpiry/assets/33926714/6cb03e2e-57ab-4a64-9b7c-e6cc99b096f9" width="240">
+<img src="https://github.com/nursaharii/EatBeforeExpiry/assets/33926714/0fd78d2d-6a0b-44fc-aee2-40d28ba19233" width="240">
+<img src="https://github.com/nursaharii/EatBeforeExpiry/assets/33926714/4b4aee61-2637-4004-b6a7-051feba0089a" width="240">
+
 ## Features
   ### Home Page
   <p>
@@ -56,14 +64,6 @@
 <strong>1.</strong>  Search for "Food Expiry Tracker-AI" in your device's app store. For quick access, use <a href="https://apps.apple.com/tr/app/food-expiry-tracker-ai/id6474331960">this link</a> to download MyAppName from the App Store.
 <br><strong>2.</strong> Download the app.
 <br><strong>3.</strong> Open Food Expiry Tracker and start managing your groceries efficiently.
-
-## Screenshots
-<img src="https://github.com/nursaharii/EatBeforeExpiry/assets/33926714/015ab233-de45-46d2-92df-47f195ee2e08" width="240">
-<img src="https://github.com/nursaharii/EatBeforeExpiry/assets/33926714/ff3ee442-5ed3-47ab-b225-a628a1bad746" width="240">
-<img src="https://github.com/nursaharii/EatBeforeExpiry/assets/33926714/47c010dc-6aa8-4180-8d56-efc16d64c7d8" width="240">
-<img src="https://github.com/nursaharii/EatBeforeExpiry/assets/33926714/6cb03e2e-57ab-4a64-9b7c-e6cc99b096f9" width="240">
-<img src="https://github.com/nursaharii/EatBeforeExpiry/assets/33926714/0fd78d2d-6a0b-44fc-aee2-40d28ba19233" width="240">
-<img src="https://github.com/nursaharii/EatBeforeExpiry/assets/33926714/4b4aee61-2637-4004-b6a7-051feba0089a" width="240">
 
 ## Third Party Libraries
   - <a href="https://github.com/MacPaw/OpenAI">OpenAI</a>
