@@ -16,7 +16,7 @@ class RecipeViewController: UIViewController {
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var recipeLabel: UITextView!
     
- 
+    
     
     var viewModel = RecipeViewModel()
     private var cancellables: Set<AnyCancellable> = []
@@ -96,6 +96,19 @@ class RecipeViewController: UIViewController {
                     ProgressHUD.remove()
                 }
             }.store(in: &cancellables)
+        
+        viewModel.errorMessage = { errorMessage in
+            ProgressHUD.remove()
+            if let error = errorMessage {
+                self.showErrorMessage(error)
+            }
+        }
+    }
+    
+    func showErrorMessage(_ message: String) {
+        let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        self.present(alert, animated: true)
     }
     
     @IBAction func close(_ sender: Any) {

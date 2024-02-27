@@ -12,6 +12,7 @@ import OpenAI
 class RecipeViewModel {
     let openAI = OpenAI(apiToken: Singleton.sharedInstance.apiKey)
     @Published var recipeText = String()
+    var errorMessage: ((String?) -> Void)?
     
     func fetchRecipe(items: [Product],category: String) {
            var strItems = ""
@@ -34,7 +35,7 @@ class RecipeViewModel {
                        UserDefaultsManager().setData(value: [success.choices.first?.message.content:date], key: .expireSuggestion)
                    }
                case .failure(let error):
-                   print(error.localizedDescription)
+                   self.errorMessage?("An error occurred: \(error.localizedDescription)")
                }
            }
        }
