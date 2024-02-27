@@ -60,11 +60,6 @@
   <br><strong>Additional Libraries:</strong> Dependencies and third-party libraries, if any, are managed through CocoaPods or Swift Package Manager. Ensure you have the latest version of these tools installed.
   <br><strong>Internet Connection:</strong> An active internet connection is required for certain features of the app, such as fetching updates, accessing online resources, or synchronizing data.
 
-  ### Download and Install
-<strong>1.</strong>  Search for "Food Expiry Tracker-AI" in your device's app store. For quick access, use <a href="https://apps.apple.com/tr/app/food-expiry-tracker-ai/id6474331960">this link</a> to download MyAppName from the App Store.
-<br><strong>2.</strong> Download the app.
-<br><strong>3.</strong> Open Food Expiry Tracker and start managing your groceries efficiently.
-
 ## Third Party Libraries
   - <a href="https://github.com/MacPaw/OpenAI">OpenAI</a>
   - <a href = "https://github.com/relatedcode/ProgressHUD">ProgressHUD</a>
