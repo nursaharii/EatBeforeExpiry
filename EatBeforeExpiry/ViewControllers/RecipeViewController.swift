@@ -6,8 +6,8 @@
 //
 
 import UIKit
-import OpenAI
 import ProgressHUD
+import Combine
 
 class RecipeViewController: UIViewController {
     
@@ -16,10 +16,14 @@ class RecipeViewController: UIViewController {
     @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var recipeLabel: UITextView!
     
-    var items = [Product]()
+ 
+    
+    var viewModel = RecipeViewModel()
+    private var cancellables: Set<AnyCancellable> = []
+    
     var recipeTitle = ""
-    let openAI = OpenAI(apiToken: "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")
     var category = String()
+    var items = [Product]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,77 +41,63 @@ class RecipeViewController: UIViewController {
         UIView.animate(withDuration: 1.5) {
             self.visualEffectView.alpha = 0.7
         }
+        ProgressHUD.animate("Loading")
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        bindViewModel()
+        
         if category == "all" {
             titleLabel.textAlignment = .center
-            if let recipeData = UserDefaultsManager().getData(type: [String:Date].self, forKey: .recipe) {
+            
+            if let recipeData = viewModel.getDataFromUserDeafults(category) {
+                ProgressHUD.remove()
                 let formatter = DateFormatter()
                 formatter.dateFormat = "yyyy-MM-dd"
                 let strDate = formatter.string(from: Date())
                 let date = formatter.date(from: strDate)
                 if date! > recipeData.first!.value {
-                    askAI()
+                    viewModel.fetchRecipe(items: items, category: category)
                 } else {
                     self.recipeLabel.text = recipeData.first?.key
                     titleLabel.isHidden = false
                 }
             } else {
-                askAI()
+                viewModel.fetchRecipe(items: items, category: category)
             }
         } else {
             titleLabel.textAlignment = .left
-            if let recipeData = UserDefaultsManager().getData(type: [String:Date].self, forKey: .expireSuggestion) {
+            if let recipeData = viewModel.getDataFromUserDeafults(category) {
+                ProgressHUD.remove()
                 let formatter = DateFormatter()
                 formatter.dateFormat = "yyyy-MM-dd"
                 let strDate = formatter.string(from: Date())
                 let date = formatter.date(from: strDate)
                 if date! > recipeData.first!.value {
-                    askAI()
+                    viewModel.fetchRecipe(items: items, category: category)
                 } else {
                     self.recipeLabel.text = recipeData.first?.key
                     titleLabel.isHidden = false
                 }
             } else {
-                askAI()
+                viewModel.fetchRecipe(items: items, category: category)
             }
-
         }
     }
     
-    func askAI() {
-        var strItems = ""
-        for i in items {
-            strItems = strItems + ", \(i.productName)"
-        }
-        titleLabel.isHidden = true
-        ProgressHUD.animate("Loading")
-        let query = ChatQuery(model: .gpt3_5Turbo, messages: [.init(role: .user, content: "\(strItems) içeren yemek tarifi")])
-        
-        self.openAI.chats(query: query) { result in
-            switch result {
-            case .success(let success):
-                ProgressHUD.remove()
+    func bindViewModel() {
+        viewModel.$recipeText
+            .receive(on: RunLoop.main)
+            .sink { text in
                 DispatchQueue.main.async {
-                    self.titleLabel.isHidden = false
-                    self.recipeLabel.text = success.choices.first?.message.content
-                    let formatter = DateFormatter()
-                    formatter.dateFormat = "yyyy-MM-dd"
-                    let strDate = formatter.string(from: Date())
-                    let date = formatter.date(from: strDate)
-                    if self.category == "all" {
-                        UserDefaultsManager().setData(value: [success.choices.first?.message.content:date], key: .recipe)
-                    } else {
-                        UserDefaultsManager().setData(value: [success.choices.first?.message.content:date], key: .expireSuggestion)
-                    }
-                    
+                    ProgressHUD.remove()
                 }
-            case .failure(let failure):
-                print(failure.localizedDescription)
-            }
-        }
+                if text != "" {
+                    self.titleLabel.isHidden = false
+                    self.recipeLabel.text = text
+                }
+            }.store(in: &cancellables)
     }
     
     @IBAction func close(_ sender: Any) {
