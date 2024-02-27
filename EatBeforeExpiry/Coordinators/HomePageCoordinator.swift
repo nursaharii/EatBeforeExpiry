@@ -9,14 +9,20 @@ import Foundation
 import UIKit
 
 class HomePageCoordinator: Coordinator {
-    var navigationController: UINavigationController?
+    
+    var childCoordinators = [Coordinator]()
+    var navigationController: UINavigationController
+    
+    init(navigationController: UINavigationController) {
+            self.navigationController = navigationController
+        }
     
     func start() {
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
         let vc = storyboard.instantiateViewController(identifier: "ViewController") as! HomePageViewController
         vc.modalPresentationStyle = .fullScreen
         vc.coordinator = self
-        navigationController?.pushViewController(vc, animated: false)
+        navigationController.pushViewController(vc, animated: false)
     }
     
     func goToAddItemVC(_ selectedItem: Product?,_ completion: @escaping () -> Void) {
@@ -25,7 +31,7 @@ class HomePageCoordinator: Coordinator {
         vc.modalPresentationStyle = .overFullScreen
         vc.modalTransitionStyle = .crossDissolve
         vc.selectedItem = selectedItem
-        navigationController?.present(vc, animated: true) {
+        navigationController.present(vc, animated: true) {
             vc.addItemListener = {
                 completion()
             }
@@ -33,13 +39,9 @@ class HomePageCoordinator: Coordinator {
     }
     
     func goToNotificationVC(_ aboutToExpireItems: [Product], _ expiryItems: [Product]) {
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        let viewController = storyboard.instantiateViewController(withIdentifier: "NotificationVC") as! NotificationViewController
-        viewController.modalPresentationStyle = .overFullScreen
-        viewController.modalTransitionStyle = .crossDissolve
-        viewController.aboutToExpireItems = aboutToExpireItems
-        viewController.expiryItems = expiryItems
-        navigationController?.present(viewController, animated: true)
+        let nofiticationCoordinator = NotificationCoordinator(navigationController: navigationController, aboutToExpireItems: aboutToExpireItems, expiryItems: expiryItems)
+        childCoordinators.append(nofiticationCoordinator)
+        nofiticationCoordinator.start()
     }
     
     func goToRecipeVC(_ items: [Product], _ vcTitle: String, _ category: String) {
@@ -50,6 +52,6 @@ class HomePageCoordinator: Coordinator {
         viewController.items = items
         viewController.recipeTitle = vcTitle
         viewController.category = category
-        navigationController?.present(viewController, animated: true)
+        navigationController.present(viewController, animated: true)
     }
 }

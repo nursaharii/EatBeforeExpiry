@@ -10,7 +10,7 @@ import Combine
 import OpenAI
 
 class RecipeViewModel {
-    let openAI = OpenAI(apiToken: URLConstants.apiKey)
+    let openAI = OpenAI(apiToken: Singleton.sharedInstance.apiKey)
     @Published var recipeText = String()
     
     func fetchRecipe(items: [Product],category: String) {
@@ -19,8 +19,7 @@ class RecipeViewModel {
                strItems += ", \(item.productName)"
            }
            
-        let query = URLConstants.chatQuery(strItems)
-           
+        let query = AIConfig.chatQuery(strItems)
            openAI.chats(query: query) { result in
                switch result {
                case .success(let success):
@@ -40,8 +39,8 @@ class RecipeViewModel {
            }
        }
     
-    func getDataFromUserDeafults(_ category: String) ->  [String:Date]? {
-        if let recipeData = UserDefaultsManager().getData(type: [String:Date].self, forKey: .recipe) {
+    func getDataFromUserDeafults(_ key: UserDefaultKeys) ->  [String:Date]? {
+        if let recipeData = UserDefaultsManager().getData(type: [String:Date].self, forKey: key) {
             return recipeData
         }
         return nil

@@ -7,6 +7,7 @@
 
 import UIKit
 import ProgressHUD
+import Combine
 
 class NotificationViewController: UIViewController {
     
@@ -15,56 +16,56 @@ class NotificationViewController: UIViewController {
     @IBOutlet weak var emptyLabel: UILabel!
     @IBOutlet weak var goToRecipeButton: UIButton!
     
-    var expiryItems = [Product]()
-    var aboutToExpireItems = [Product]()
-    var selectedTabItems = [Product]()
+    var coordinator: NotificationCoordinator?
+    var viewModel = NotificationViewModel()
+    private var cancellables: Set<AnyCancellable> = []
+    
+    var expiryItems = [Product]() {
+        didSet {
+            viewModel.expiryItems = expiryItems
+        }
+    }
+    var aboutToExpireItems = [Product]() {
+        didSet {
+            viewModel.aboutToExpireItems = aboutToExpireItems
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        viewModel.selectSegment(index: 0)
+        setupBindings()
         tableView.register(UINib(nibName: "ItemCell", bundle: nil), forCellReuseIdentifier: "ItemCell")
-        selectedTabItems = aboutToExpireItems
         goToRecipeButton.makeRounded()
         goToRecipeButton.addShadow()
-        if selectedTabItems.isEmpty {
-            emptyLabel.isHidden = false
-            tableView.isHidden = true
-            emptyLabel.textColor = .grayCategory
-        } else {
-            emptyLabel.isHidden = true
-            tableView.isHidden = false
-        }
-        tableView.reloadData()
-        
+        emptyLabel.textColor = .grayCategory
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.navigationController?.setNavigationBarHidden(false, animated: false)
+        self.navigationController?.setNavigationBarHidden(true, animated: false)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        self.navigationController?.setNavigationBarHidden(true, animated: false)
+        self.navigationController?.setNavigationBarHidden(false, animated: false)
+    }
+    
+    func setupBindings() {
+        viewModel.$selectedTabItems.receive(on: RunLoop.main)
+            .sink { [weak self] selectedTabItems in
+                guard let self = self else { return }
+                self.tableView.reloadData()
+                self.emptyLabel.isHidden = !self.viewModel.selectedTabItems.isEmpty
+                self.tableView.isHidden = self.viewModel.selectedTabItems.isEmpty
+                self.goToRecipeButton.isHidden = self.viewModel.selectedSegmentIndex != 0
+            }.store(in: &cancellables)
     }
     
     
     @IBAction func selectSegment(_ sender: CustomSegmentedControl) {
-        switch sender.selectedSegmentIndex {
-        case 0:
-            selectedTabItems.removeAll()
-            selectedTabItems = aboutToExpireItems
-            goToRecipeButton.isHidden = false
-            tableView.reloadData()
-        case 1:
-            selectedTabItems.removeAll()
-            selectedTabItems = expiryItems
-            goToRecipeButton.isHidden = true
-            tableView.reloadData()
-        default:
-            break
-        }
-        
-        if selectedTabItems.isEmpty {
+        viewModel.selectSegment(index: sender.selectedSegmentIndex)
+        if viewModel.selectedTabItems.isEmpty {
             emptyLabel.isHidden = false
             tableView.isHidden = true
             emptyLabel.textColor = .grayCategory
@@ -78,32 +79,25 @@ class NotificationViewController: UIViewController {
         if aboutToExpireItems.isEmpty {
             ProgressHUD.banner("Listeniz Boş", "Yemek önerisi sunulabilecek herhangi bir malzeme bulunamadı.", delay: 3.0)
         } else {
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            let viewController = storyboard.instantiateViewController(withIdentifier: "RecipeVC") as! RecipeViewController
-            viewController.modalPresentationStyle = .overFullScreen
-            viewController.modalTransitionStyle = .coverVertical
-            viewController.recipeTitle = "Son kullanma tarihi yaklaşmakta olan ürünleriniz için tarifiniz:"
-            viewController.items = aboutToExpireItems
-            viewController.category = "aboutToExpire"
-            self.present(viewController, animated: true)
+            coordinator?.goToRecipeVC(aboutToExpireItems, "Son kullanma tarihi yaklaşmakta olan ürünleriniz için tarifiniz:", "aboutToExpire")
         }
     }
     
     @IBAction func close(_ sender: Any) {
-        self.dismiss(animated: true)
+        coordinator?.goBack()
     }
     
 }
 
 extension NotificationViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        selectedTabItems.count
+        viewModel.selectedTabItems.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         if let cell = tableView.dequeueReusableCell(withIdentifier: ItemCell.identifier, for: indexPath) as? ItemCell {
-            let items = selectedTabItems
+            let items = viewModel.selectedTabItems
             cell.expiryDate.edgeInset = UIEdgeInsets(top: 5, left: 10, bottom: 5, right: 10)
             cell.category.edgeInset = UIEdgeInsets(top: 5, left: 10, bottom: 5, right: 10)
             cell.category.backgroundColor = .yellow
@@ -114,20 +108,11 @@ extension NotificationViewController: UITableViewDelegate, UITableViewDataSource
             formatter.dateStyle = .medium
             formatter.timeStyle = .none
             cell.expiryDate.text = formatter.string(from: items[indexPath.row].expiryDate)
-            
-            //            if selectedItems.contains(items[indexPath.row].productName) {
-            //                cell.selectImage.image = UIImage(named: "select-filled")
-            //            } else {
-            //                cell.selectImage.image = UIImage(named: "select-empty")
-            //            }
-            
             let today = Date()
             if let nextDate = Calendar.current.date(byAdding: .day, value: 5, to: today) {
                 if items[indexPath.row].expiryDate <= today {
                     cell.expiryDate.backgroundColor = .errorRed
                     cell.expiryDate.textColor = .white
-                    //                    cell.selectItemButton.isEnabled = false
-                    //                    cell.selectImage.image = UIImage(named:"select-disabled")
                 } else if items[indexPath.row].expiryDate <= nextDate {
                     cell.expiryDate.backgroundColor = .yellow
                     cell.expiryDate.textColor = .black
@@ -159,16 +144,6 @@ extension NotificationViewController: UITableViewDelegate, UITableViewDataSource
             default:
                 cell.category.backgroundColor = Categories.fresh.color
             }
-            
-            //            cell.selectItemCallback = {
-            //                if let removeIndex = self.selectedItems.firstIndex(of: self.items[indexPath.row].productName) {
-            //                    self.selectedItems.remove(at: removeIndex)
-            //                    cell.selectImage.image = UIImage(named: "select-empty")
-            //                } else {
-            //                    self.selectedItems.append(self.items[indexPath.row].productName)
-            //                    cell.selectImage.image = UIImage(named: "select-filled")
-            //                }
-            //            }
             return cell
         }
         

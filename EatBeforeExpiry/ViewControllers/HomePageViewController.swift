@@ -9,68 +9,6 @@ import UIKit
 import ProgressHUD
 import Combine
 
-enum Categories: String, CaseIterable {
-    case all = "Tümü"
-    case fresh = "Taze Ürünler"
-    case milk = "Süt Ürünleri"
-    case dryFood = "Kuru Gıda ve Bakliyatlar"
-    case fastFood = "Konserve ve Hazır Gıdalar"
-    case drink = "İçecekler"
-    case dessert = "Atıştırmalıklar ve Tatlılar"
-    case sauce = "Baharatlar ve Soslar"
-    case bread = "Ekmek ve Fırın Ürünleri"
-    case other = "Diğer"
-    
-    var color: UIColor {
-        switch self {
-        case .all:
-            return .black
-        case .fresh:
-            return .greenCategory
-        case .milk:
-            return .blueCategory
-        case .dryFood:
-            return .brownCategory
-        case .fastFood:
-            return .orangeCategory
-        case .drink:
-            return .redCategory
-        case .dessert:
-            return .purpleCategory
-        case .sauce:
-            return .yellowCategory
-        case .bread:
-            return .grayCategory
-        case .other:
-            return .pinkCategory
-        }
-    }
-    var image: String {
-        switch self {
-        case .all:
-            return "all"
-        case .fresh:
-            return "fresh-category"
-        case .milk:
-            return "milk-category"
-        case .dryFood:
-            return "dryFood-category"
-        case .fastFood:
-            return "fastFood-category"
-        case .drink:
-            return "drink-category"
-        case .dessert:
-            return "dessert-category"
-        case .sauce:
-            return  "sauce-category"
-        case .bread:
-            return  "bread-category"
-        case .other:
-            return  "others-category"
-        }
-    }
-}
-
 class HomePageViewController: UIViewController {
     
     @IBOutlet weak var tableView: UITableView!
@@ -85,11 +23,9 @@ class HomePageViewController: UIViewController {
     
     var viewModel = HomePageViewModel()
     var coordinator: HomePageCoordinator?
-    
     private var cancellables: Set<AnyCancellable> = []
+    
     var lowerData = String()
-    var aboutToExpireItems = [Product]()
-    var expiryItems = [Product]()
         
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -177,7 +113,7 @@ class HomePageViewController: UIViewController {
     }
     
     @IBAction func goToNotificationVC(_ sender: Any) {
-        coordinator?.goToNotificationVC(aboutToExpireItems, expiryItems)
+        coordinator?.goToNotificationVC(viewModel.aboutToExpireItems, viewModel.expiryItems)
     }
     
     func resetAll() {

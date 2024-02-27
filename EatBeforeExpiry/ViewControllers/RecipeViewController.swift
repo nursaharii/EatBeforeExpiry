@@ -51,7 +51,7 @@ class RecipeViewController: UIViewController {
         if category == "all" {
             titleLabel.textAlignment = .center
             
-            if let recipeData = viewModel.getDataFromUserDeafults(category) {
+            if let recipeData = viewModel.getDataFromUserDeafults(.recipe) {
                 ProgressHUD.remove()
                 let formatter = DateFormatter()
                 formatter.dateFormat = "yyyy-MM-dd"
@@ -68,7 +68,7 @@ class RecipeViewController: UIViewController {
             }
         } else {
             titleLabel.textAlignment = .left
-            if let recipeData = viewModel.getDataFromUserDeafults(category) {
+            if let recipeData = viewModel.getDataFromUserDeafults(.expireSuggestion) {
                 ProgressHUD.remove()
                 let formatter = DateFormatter()
                 formatter.dateFormat = "yyyy-MM-dd"
@@ -90,12 +90,10 @@ class RecipeViewController: UIViewController {
         viewModel.$recipeText
             .receive(on: RunLoop.main)
             .sink { text in
-                DispatchQueue.main.async {
-                    ProgressHUD.remove()
-                }
                 if text != "" {
                     self.titleLabel.isHidden = false
                     self.recipeLabel.text = text
+                    ProgressHUD.remove()
                 }
             }.store(in: &cancellables)
     }
